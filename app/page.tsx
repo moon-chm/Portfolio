@@ -324,7 +324,7 @@ export default function Portfolio() {
             image="/port.png"
             delay={0.2}
             projectUrl="https://portfolio-ecru-seven-38.vercel.app/"
-            githubUrl="https://github.com/RohitK1865/portfolio"
+            githubUrl="https://github.com/moon-chm/portfolio"
           />
           <ProjectCard
             title="Notes making App"
@@ -429,7 +429,7 @@ export default function Portfolio() {
                 </div>
                 <div>
                   <p className="font-medium text-[#D4A373]">GitHub</p>
-                  <p className="text-[#D4A373]/80">RohitK1865</p>
+                  <p className="text-[#D4A373]/80">moon-chm</p>
                 </div>
               </div>
             </div>
@@ -484,7 +484,7 @@ export default function Portfolio() {
                 <span className="sr-only ">LinkedIn</span>
               </a>
               <a
-                href="https://github.com/RohitK1865"
+                href="https://github.com/moon-chm"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-[#FEFAE0] transition-colors"
