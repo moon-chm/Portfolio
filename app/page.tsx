@@ -365,18 +365,32 @@ export default function Portfolio() {
       delay={0.2}
     />
     <ExperienceItem
+      title="Gen-AI Intern"
+      company="Sunbeam Infotech Private Limited(Pune)"
+      period="2025 – 2026"
+      description="Developed Generative AI workflows using LLMs, embeddings, and vector databases. Implemented data scraping, preprocessing, chunking, and retrieval pipelines while collaborating with cross-functional teams to build scalable AI-driven applications."
+      delay={0.3}
+    />
+    <ExperienceItem
+      title="President, DSSA Student Association"
+      company="DKTE"
+      period="2025 – 2026"
+      description="Elected as DSSA President, where I demonstrated leadership by managing teams, coordinating events, and building strong collaboration between students and faculty to enhance learning beyond the classroom."
+      delay={0.4}
+    />
+    <ExperienceItem
       title="President, ITESA Student Association"
       company="Sharad Institute of Technology Polytechnic, Yadrav"
       period="2023 – 2024"
       description="Elected as President of ITESA, where I led a team to plan and execute various technical and co-curricular events. Fostered student engagement, collaborated with faculty, and promoted a culture of innovation and learning across the department."
-      delay={0.3}
+      delay={0.5}
     />
     <ExperienceItem
       title="Diploma in Information Technology"
       company="Sharad Institute of Technology Polytechnic, Yadrav"
       period=" 2021 –  2024"
       description="Completed a rigorous three-year diploma with an aggregate score of 88.63%. Gained hands-on experience and foundational expertise in software development, computer networks, database management, and IT systems through academic and project-based learning."
-      delay={0.4}
+      delay={0.6}
     />
         </div>
       </Section>
