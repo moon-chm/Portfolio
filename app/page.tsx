@@ -87,7 +87,7 @@ export default function Portfolio() {
       // Use Lenis scrollTo method for smooth scrolling
       const yOffset = -80 // Header height offset
       const elementPosition = element.offsetTop + yOffset
-      
+
       lenisRef.current.scrollTo(elementPosition, {
         duration: 2, // Custom duration for navigation
         easing: (t) => t * (2 - t), // Custom easing for navigation
@@ -230,12 +230,12 @@ export default function Portfolio() {
       {/* About Section */}
       <Section id="about" title="About Me" icon={<User className="w-6 h-6" />}>
         <div className="relative grid md:grid-cols-2 gap-12 items-center z-10">
-        <motion.div variants={fadeInVariants} className="relative h-[600px] w-full">
-          <div className="absolute inset-0 translate-x-6 translate-y-6 border-4 border-[#D4A373] rounded-lg -z-10" />
-          <div className="relative h-full w-full overflow-hidden rounded-lg">
-            <Image src="/me.jpeg" alt="Profile" fill className="object-cover" priority />
-          </div>
-        </motion.div>
+          <motion.div variants={fadeInVariants} className="relative h-[600px] w-full">
+            <div className="absolute inset-0 translate-x-6 translate-y-6 border-4 border-[#D4A373] rounded-lg -z-10" />
+            <div className="relative h-full w-full overflow-hidden rounded-lg">
+              <Image src="/me.jpeg" alt="Profile" fill className="object-cover" priority />
+            </div>
+          </motion.div>
           <motion.div variants={fadeInVariants}>
             <h3 className="text-2xl font-bold text-[#D4A373] mb-4">Who I Am</h3>
             <p className="text-[#D4A373]/80 mb-6">
@@ -255,58 +255,76 @@ export default function Portfolio() {
           </motion.div>
         </div>
       </Section>
-      
+
       {/* Skills Section */}
       <Section id="skills" title="My Skills" icon={<Code className="w-6 h-6" />} className="bg-[#E9EDC9]">
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-    <SkillCard
-      title="Frontend Development"
-      skills={["React", "Next.js", "HTML/CSS", "JavaScript", "TypeScript", "Tailwind CSS"]}
-      delay={0.1}
-    />
-    <SkillCard
-      title="Backend Development"
-      skills={["Node.js", "Express.js", "RESTful APIs", "Firebase", "PHP"]}
-      delay={0.2}
-    />
-    <SkillCard
-      title="Design & UI/UX Tools"
-      skills={["Figma", "Canva", "TouchDesigner"]}
-      delay={0.3}
-    />
-    <SkillCard
-      title="Dev Tools & IDEs"
-      skills={["Git & GitHub", "Postman", "Visual Studio Code", "Android Studio", "Binary Ninja"]}
-      delay={0.4}
-    />
-    <SkillCard
-      title="Cloud, Database & AI Services"
-      skills={["IBM Watson", "Firebase", "Oracle", "Microsoft Azure", "SQL"]}
-      delay={0.5}
-    />
-  </div>
-</Section>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <SkillCard
+            title="Frontend Development"
+            skills={["React", "Next.js", "HTML/CSS", "JavaScript", "TypeScript", "Tailwind CSS"]}
+            delay={0.1}
+          />
+          <SkillCard
+            title="Backend Development"
+            skills={["Node.js", "Express.js", "RESTful APIs", "Firebase", "PHP"]}
+            delay={0.2}
+          />
+          <SkillCard
+            title="Design & UI/UX Tools"
+            skills={["Figma", "Canva", "TouchDesigner"]}
+            delay={0.3}
+          />
+          <SkillCard
+            title="Dev Tools & IDEs"
+            skills={["Git & GitHub", "Postman", "Visual Studio Code", "Android Studio", "Binary Ninja"]}
+            delay={0.4}
+          />
+          <SkillCard
+            title="Cloud, Database & AI Services"
+            skills={["IBM Watson", "Firebase", "Oracle", "Microsoft Azure", "SQL"]}
+            delay={0.5}
+          />
+        </div>
+      </Section>
 
       {/* Projects Section */}
       <Section id="projects" title="Featured Projects" icon={<Briefcase className="w-6 h-6" />}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <ProjectCard
-            title="Alzheimer's Cure using AI " 
+            title="Alzheimer's Cure using AI "
             description="An AI-powered application aimed at aiding Alzheimer's disease research and treatment. Features include advanced AI models for disease analysis, seamless photo upload from mobile devices to the website for monitoring patient progress, and additional tools to support caregivers and medical professionals."
-            tags={["Tailwind CSS", "Framer Motion", "Next.js","Android Studio","Firebase","Microsoft Azure"]}
+            tags={["Tailwind CSS", "Framer Motion", "Next.js", "Android Studio", "Firebase", "Microsoft Azure"]}
             image="/alz.jpeg"
             delay={0.4}
             projectUrl="https://example.com/project4"
             githubUrl="https://github.com/yourusername/project4"
           />
           <ProjectCard
-            title="Rural girl's empowerment" 
+            title="Rural girl's empowerment"
             description="A web platform dedicated to empowering rural girls through access to education, digital resources, and community support. The application includes features like scholarship information, mentorship opportunities, skill development content, and a secure space for users to connect and share their stories."
-            tags={["Tailwind CSS", "Framer Motion", "Android Studio","Firebase","IBM Watson","PipeDream","Gemini API","Android Studio"]}
+            tags={["Tailwind CSS", "Framer Motion", "Android Studio", "Firebase", "IBM Watson", "PipeDream", "Gemini API", "Android Studio"]}
             image="/rural.jpeg"
             delay={0.4}
-            projectUrl="https://example.com/project4"
-            githubUrl="https://github.com/yourusername/project4"
+            projectUrl="https://rural-girls-empowerment-platform.vercel.app/"
+            githubUrl="https://github.com/moon-chm/RuralGirls_Empowerment_Platform"
+          />
+          <ProjectCard
+            title="SMARAN – Smart Memory Assistance and Recall Automation Network"
+            description="An AI-powered memory care platform using hybrid RAG (Neo4j + FAISS) for fast retrieval and NLP pipelines to assist dementia patients with real-time voice interaction."
+            tags={["Python", "FastAPI", "Neo4j", "FAISS", "LangChain", "Docker", "LLMs"]}
+            image="/smaran.png"
+            delay={0.3}
+            projectUrl="https://github.com/moon-chm/SMARAN"
+            githubUrl="https://github.com/moon-chm/SMARAN"
+          />
+          <ProjectCard
+            title="Tracklyst – Coding Progress & Placement Tracking Platform"
+            description="A multi-platform system designed to track coding progress and placement readiness. Built as a 3-component ecosystem (browser extension, student dashboard, and faculty portal), enabling real-time monitoring of coding activity and performance insights. Successfully adopted by 70+ students across the college."
+            tags={["TypeScript", "Java", "JavaScript", "HTML", "Android"]}
+            image="/tracklyst.png"
+            delay={0.4}
+            projectUrl="https://github.com/moon-chm/tracklyst"
+            githubUrl="https://github.com/moon-chm/tracklyst"
           />
           <ProjectCard
             title="Job portal (web app)"
@@ -314,35 +332,17 @@ export default function Portfolio() {
             tags={["HTML/CSS", "Node.js", "Django", "MongoDB"]}
             image="/job.png"
             delay={0.1}
-            projectUrl="https://example.com/project1"
-            githubUrl="https://github.com/RohitK1865/Job-portal"
+            projectUrl="https://job-portal-jtlt.onrender.com/"
+            githubUrl="https://github.com/moon-chm/Job-portal"
           />
           <ProjectCard
             title="Portfolio Website"
             description="A responsive portfolio website with smooth animations and dark mode support."
-            tags={["Next.js", "Framer Motion", "Tailwind CSS","Nodemailer","React Hook Form","Cloudinary " ]}
+            tags={["Next.js", "Framer Motion", "Tailwind CSS", "Nodemailer", "React Hook Form", "Cloudinary "]}
             image="/port.png"
             delay={0.2}
             projectUrl="https://portfolio-ecru-seven-38.vercel.app/"
             githubUrl="https://github.com/moon-chm/portfolio"
-          />
-          <ProjectCard
-            title="Notes making App"
-            description="A productivity app enabling users to create, share, and manage notes with live updates."
-            tags={["Android Studio", "Firebase", "Java"]}
-            image="/notes.jpeg"
-            delay={0.3}
-            projectUrl="https://example.com/project3"
-            githubUrl="https://github.com/yourusername/project3"
-          />
-          <ProjectCard
-            title="MCQ checking using AI (App)" 
-            description="An AI-powered Android application designed to automatically evaluate multiple-choice questions (MCQs) from scanned or uploaded answer sheets. The app will use Optical Character Recognition (OCR) and machine learning models to detect answers, compare them against a key, and generate detailed performance reports in real-time. Aimed at simplifying assessment workflows for teachers and coaching centers."
-             tags={["Android Studio", "Java/Kotlin", "ML Kit", "Firebase", "OCR", "AI"]}
-            image="/mcq.png"
-            delay={0.4}
-            projectUrl="https://example.com/project4"
-            githubUrl="https://github.com/yourusername/project4"
           />
         </div>
       </Section>
@@ -351,50 +351,50 @@ export default function Portfolio() {
       <Section id="experience" title="Work Experience" icon={<FileText className="w-6 h-6" />} className="bg-[#FAEDCD]">
         <div className="space-y-12">
           <ExperienceItem
-      title="GDG Hackathon Finalist"
-      company="GDG on Campus, SGU"
-      period="2025"
-      description="Recognized as a finalist for building a comprehensive rural girl empowerment platform featuring a responsive website, WhatsApp-based shopping chatbot, and an emergency SOS mobile application. Spearheaded both frontend and backend development while collaborating on scalable, impactful tech solutions."
-      delay={0.1}
-    />
-    <ExperienceItem
-      title="Android Developer Intern"
-      company="IGap Technologies"
-      period="2023 – 2024"
-      description="Developed and maintained Android applications with a focus on user-centric design and optimized performance. Worked closely with cross-functional teams to implement new features, resolve bugs, and improve overall app reliability."
-      delay={0.2}
-    />
-    <ExperienceItem
-      title="Gen-AI Intern"
-      company="Sunbeam Infotech Private Limited(Pune)"
-      period="2025 – 2026"
-      description="Developed Generative AI workflows using LLMs, embeddings, and vector databases. Implemented data scraping, preprocessing, chunking, and retrieval pipelines while collaborating with cross-functional teams to build scalable AI-driven applications."
-      delay={0.3}
-    />
-    <ExperienceItem
-      title="President, DSSA Student Association"
-      company="DKTE"
-      period="2025 – 2026"
-      description="Elected as DSSA President, where I demonstrated leadership by managing teams, coordinating events, and building strong collaboration between students and faculty to enhance learning beyond the classroom."
-      delay={0.4}
-    />
-    <ExperienceItem
-      title="President, ITESA Student Association"
-      company="Sharad Institute of Technology Polytechnic, Yadrav"
-      period="2023 – 2024"
-      description="Elected as President of ITESA, where I led a team to plan and execute various technical and co-curricular events. Fostered student engagement, collaborated with faculty, and promoted a culture of innovation and learning across the department."
-      delay={0.5}
-    />
-    <ExperienceItem
-      title="Diploma in Information Technology"
-      company="Sharad Institute of Technology Polytechnic, Yadrav"
-      period=" 2021 –  2024"
-      description="Completed a rigorous three-year diploma with an aggregate score of 88.63%. Gained hands-on experience and foundational expertise in software development, computer networks, database management, and IT systems through academic and project-based learning."
-      delay={0.6}
-    />
+            title="GDG Hackathon Finalist"
+            company="GDG on Campus, SGU"
+            period="2025"
+            description="Recognized as a finalist for building a comprehensive rural girl empowerment platform featuring a responsive website, WhatsApp-based shopping chatbot, and an emergency SOS mobile application. Spearheaded both frontend and backend development while collaborating on scalable, impactful tech solutions."
+            delay={0.1}
+          />
+          <ExperienceItem
+            title="Android Developer Intern"
+            company="IGap Technologies"
+            period="2023 – 2024"
+            description="Developed and maintained Android applications with a focus on user-centric design and optimized performance. Worked closely with cross-functional teams to implement new features, resolve bugs, and improve overall app reliability."
+            delay={0.2}
+          />
+          <ExperienceItem
+            title="Gen-AI Intern"
+            company="Sunbeam Infotech Private Limited(Pune)"
+            period="2025 – 2026"
+            description="Developed Generative AI workflows using LLMs, embeddings, and vector databases. Implemented data scraping, preprocessing, chunking, and retrieval pipelines while collaborating with cross-functional teams to build scalable AI-driven applications."
+            delay={0.3}
+          />
+          <ExperienceItem
+            title="President, DSSA Student Association"
+            company="DKTE"
+            period="2025 – 2026"
+            description="Elected as DSSA President, where I demonstrated leadership by managing teams, coordinating events, and building strong collaboration between students and faculty to enhance learning beyond the classroom."
+            delay={0.4}
+          />
+          <ExperienceItem
+            title="President, ITESA Student Association"
+            company="Sharad Institute of Technology Polytechnic, Yadrav"
+            period="2023 – 2024"
+            description="Elected as President of ITESA, where I led a team to plan and execute various technical and co-curricular events. Fostered student engagement, collaborated with faculty, and promoted a culture of innovation and learning across the department."
+            delay={0.5}
+          />
+          <ExperienceItem
+            title="Diploma in Information Technology"
+            company="Sharad Institute of Technology Polytechnic, Yadrav"
+            period=" 2021 –  2024"
+            description="Completed a rigorous three-year diploma with an aggregate score of 88.63%. Gained hands-on experience and foundational expertise in software development, computer networks, database management, and IT systems through academic and project-based learning."
+            delay={0.6}
+          />
         </div>
       </Section>
-      
+
       {/* Contact Section */}
       <Section id="contact" title="Get In Touch" icon={<Mail className="w-6 h-6" />} className="bg-[#CCD5AE]">
         <div className="grid md:grid-cols-2 gap-12">
@@ -434,7 +434,7 @@ export default function Portfolio() {
                 </div>
                 <div>
                   <p className="font-medium text-[#D4A373]">LinkedIn</p>
-                    <p className="text-[#D4A373]/80">Rohit Kumbhar</p>
+                  <p className="text-[#D4A373]/80">Rohit Kumbhar</p>
                 </div>
               </div>
               <div className="flex items-center gap-4">
@@ -528,28 +528,28 @@ export default function Portfolio() {
                 <span className="sr-only">Twitter</span>
               </a>
               <a
-  href="https://www.instagram.com/iam_rohhh/"
-  target="_blank"
-  rel="noopener noreferrer"
-  className="hover:text-[#FEFAE0] transition-colors transition-transform transform hover:scale-110"
->
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-    <path d="M16 11.37a4 4 0 1 1-4.63-4.63 4 4 0 0 1 4.63 4.63z"></path>
-    <line x1="17.5" y1="6.5" x2="17.5" y2="6.5"></line>
-  </svg>
-  <span className="sr-only">Instagram</span>
-</a>
+                href="https://www.instagram.com/iam_rohhh/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-[#FEFAE0] transition-colors transition-transform transform hover:scale-110"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                  <path d="M16 11.37a4 4 0 1 1-4.63-4.63 4 4 0 0 1 4.63 4.63z"></path>
+                  <line x1="17.5" y1="6.5" x2="17.5" y2="6.5"></line>
+                </svg>
+                <span className="sr-only">Instagram</span>
+              </a>
 
               <a href="mailto:rohitak1865@gmail.com" className="hover:text-[#FEFAE0] transition-colors">
                 <Mail className="w-6 h-6 transition-transform transform hover:scale-110" />
@@ -742,7 +742,7 @@ function ContactForm() {
   const onSubmit = async (data) => {
     try {
       console.log("Submitting form data:", data)
-      
+
       // Make API call to send email
       const response = await fetch('/api/send-email', {
         method: 'POST',
@@ -774,7 +774,7 @@ function ContactForm() {
       }
     } catch (error) {
       console.error("Error submitting form:", error)
-      
+
       // Show error message
       toast({
         title: "Failed to send message",
