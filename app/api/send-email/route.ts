@@ -45,18 +45,32 @@ export async function POST(request: Request) {
       );
     }
 
-    // Create nodemailer transporter with explicit config
-    const transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_SERVER,
-      port: Number(process.env.EMAIL_PORT),
-      secure: process.env.EMAIL_PORT === "465", // true for 465, false for other ports like 587
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASSWORD,
-      },
-      logger: true,
-      debug: true,
-    });
+    const cleanPassword = process.env.EMAIL_PASSWORD.trim().replace(/\s+/g, "");
+
+    // Create nodemailer transporter
+    const transporter = nodemailer.createTransport(
+      process.env.EMAIL_SERVER === "smtp.gmail.com"
+        ? {
+            service: "gmail",
+            auth: {
+              user: process.env.EMAIL_USER.trim(),
+              pass: cleanPassword,
+            },
+            logger: true,
+            debug: true,
+          }
+        : {
+            host: process.env.EMAIL_SERVER,
+            port: Number(process.env.EMAIL_PORT),
+            secure: process.env.EMAIL_PORT === "465",
+            auth: {
+              user: process.env.EMAIL_USER.trim(),
+              pass: cleanPassword,
+            },
+            logger: true,
+            debug: true,
+          }
+    );
 
     // Verify SMTP connection configuration
     await transporter.verify();
@@ -123,20 +137,19 @@ ${message}
       success: true,
       message: "Thank you for your message! I'll get back to you soon.",
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Detailed error:", error);
+
+    const isAuthError = error?.code === "EAUTH" || error?.responseCode === 535;
+    const errorMessage = isAuthError
+      ? "Gmail authentication failed. Please check that your Gmail App Password in .env.local is valid and active."
+      : "Failed to send email. Please try again later.";
 
     return NextResponse.json(
       {
         success: false,
-        error: "Failed to send email. Please try again later.",
-        details:
-          process.env.NODE_ENV === "development" &&
-          error &&
-          typeof error === "object" &&
-          "message" in error
-            ? (error as { message?: string }).message
-            : undefined,
+        error: errorMessage,
+        details: error?.message || undefined,
       },
       { status: 500 }
     );

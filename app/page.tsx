@@ -755,30 +755,32 @@ function ContactForm() {
       const result = await response.json()
       console.log("API response:", result)
 
-      if (!response.ok) {
-        throw new Error(result.error || 'Failed to send message')
-      }
-
-      if (result.success) {
-        // Show success message
+      if (!response.ok || !result.success) {
+        const errorMsg = result.error || result.details || 'Failed to send message'
         toast({
-          title: "Message sent successfully!",
-          description: result.message || "Thank you for your message. I'll get back to you soon.",
-          variant: "default",
+          title: "Failed to send message",
+          description: errorMsg,
+          variant: "destructive",
         })
-
-        // Reset form
-        reset()
-      } else {
-        throw new Error(result.error || 'Failed to send message')
+        return
       }
-    } catch (error) {
-      console.error("Error submitting form:", error)
+
+      // Show success message
+      toast({
+        title: "Message sent successfully!",
+        description: result.message || "Thank you for your message. I'll get back to you soon.",
+        variant: "default",
+      })
+
+      // Reset form
+      reset()
+    } catch (error: any) {
+      console.warn("Error submitting form:", error?.message || error)
 
       // Show error message
       toast({
         title: "Failed to send message",
-        description: error.message || "Your message couldn't be sent. Please try again later.",
+        description: error?.message || "Your message couldn't be sent. Please try again later.",
         variant: "destructive",
       })
     }
