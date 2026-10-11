@@ -191,12 +191,6 @@ export default function Portfolio() {
           { yPercent: 0, opacity: 1, rotateX: 0, duration: 1.1, stagger: 0.14, ease: "power3.out" }
         )
         .fromTo(
-          ".hero-desc",
-          { opacity: 0, y: 20 },
-          { opacity: 1, y: 0, duration: 0.9, ease: "power2.out" },
-          "-=0.7"
-        )
-        .fromTo(
           ".hero-cta-group",
           { opacity: 0, y: 25 },
           { opacity: 1, y: 0, duration: 0.9, ease: "power2.out" },
@@ -438,13 +432,8 @@ export default function Portfolio() {
               </h2>
             </div>
 
-            {/* Subtitle / Bio */}
-            <p className="hero-desc text-base sm:text-lg md:text-xl text-[#FEFAE0]/95 max-w-2xl mb-10 leading-relaxed font-normal">
-              Specializing in high-performance Android architectures (Jetpack Compose, Kotlin, MVVM) paired with cognitive AI pipelines & full-stack ecosystems.
-            </p>
-
             {/* CTAs */}
-            <div className="hero-cta-group flex flex-col sm:flex-row gap-4 justify-center w-full sm:w-auto">
+            <div className="hero-cta-group mt-6 flex flex-col sm:flex-row gap-4 justify-center w-full sm:w-auto">
               <Button
                 size="lg"
                 className="bg-[#D4A373] hover:bg-[#b88657] text-white px-8 py-6 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95"
