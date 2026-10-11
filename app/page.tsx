@@ -398,29 +398,51 @@ export default function Portfolio() {
       <Section id="skills" title="My Skills" icon={<Code className="w-6 h-6" />} className="bg-[#E9EDC9]">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <SkillCard
-            title="Frontend Development"
-            skills={["React", "Next.js", "HTML/CSS", "JavaScript", "TypeScript", "Tailwind CSS"]}
+            title="Android & Mobile Development"
+            skills={[
+              "Kotlin & Java",
+              "Jetpack Compose",
+              "Android Studio & SDK",
+              "MVVM Architecture",
+              "Coroutines & Flow",
+              "Retrofit & REST APIs",
+              "Room DB & SQLite",
+              "Material 3 UI",
+            ]}
             delay={0.1}
           />
           <SkillCard
-            title="Backend Development"
-            skills={["Node.js", "Express.js", "RESTful APIs", "Firebase", "PHP"]}
+            title="Generative AI & Machine Learning"
+            skills={[
+              "LangChain & LlamaIndex",
+              "Retrieval-Augmented Gen (RAG)",
+              "Vector Databases (FAISS)",
+              "Neo4j Knowledge Graphs",
+              "Python & FastAPI",
+              "LLM Integration & Prompting",
+              "NLP & Web Scraping",
+            ]}
             delay={0.2}
           />
           <SkillCard
-            title="Design & UI/UX Tools"
-            skills={["Figma", "Canva", "TouchDesigner"]}
+            title="Frontend Development"
+            skills={["React", "Next.js", "TypeScript", "JavaScript", "Tailwind CSS", "HTML5 / CSS3", "Framer Motion"]}
             delay={0.3}
           />
           <SkillCard
-            title="Dev Tools & IDEs"
-            skills={["Git & GitHub", "Postman", "Visual Studio Code", "Android Studio", "Binary Ninja"]}
+            title="Backend & Databases"
+            skills={["Node.js & Express.js", "Ktor (Kotlin Backend)", "PostgreSQL", "MongoDB", "Firebase & Firestore", "RESTful APIs"]}
             delay={0.4}
           />
           <SkillCard
-            title="Cloud, Database & AI Services"
-            skills={["IBM Watson", "Firebase", "Oracle", "Microsoft Azure", "SQL"]}
+            title="Dev Tools & IDEs"
+            skills={["Git & GitHub", "Android Studio", "Postman", "Visual Studio Code", "Docker", "Gradle", "Binary Ninja"]}
             delay={0.5}
+          />
+          <SkillCard
+            title="Cloud, Design & UI/UX"
+            skills={["Firebase", "Microsoft Azure", "IBM Watson", "Figma", "Canva", "Wireframing & Prototyping"]}
+            delay={0.6}
           />
         </div>
       </Section>
