@@ -43,16 +43,6 @@ const projectsData = [
     githubUrl: "https://github.com/moon-chm/FarmDidi",
   },
   {
-    title: "MCQ Checking using AI (Android App)",
-    category: "android",
-    categoryLabel: "Android / Mobile",
-    description: "An AI-powered Android app that automatically evaluates multiple-choice questions from scanned or captured answer sheets using on-device OCR and ML Kit, generating instant performance analytics.",
-    tags: ["Android", "Kotlin", "ML Kit", "Firebase", "OCR", "Computer Vision"],
-    image: "/mcq.png",
-    projectUrl: null,
-    githubUrl: "https://github.com/moon-chm",
-  },
-  {
     title: "Alz-AI Companion & Caregiver App",
     category: "android",
     categoryLabel: "Android / Mobile",
@@ -71,16 +61,6 @@ const projectsData = [
     image: "/sosapp.jpg",
     projectUrl: null,
     githubUrl: "https://github.com/moon-chm/sosapp",
-  },
-  {
-    title: "Tic-Tac-Toe Game App",
-    category: "android",
-    categoryLabel: "Android / Mobile",
-    description: "An interactive Android game application designed with modern Material UI, smooth gameplay animations, scoreboard tracking, and multi-mode play.",
-    tags: ["Android", "Java", "Android Studio", "Material Design"],
-    image: "/bird.png",
-    projectUrl: null,
-    githubUrl: "https://github.com/moon-chm/tic-tac-toe_gameApp",
   },
 
   // --- Remaining Projects (AI / ML & Full-Stack Web) ---
@@ -143,16 +123,6 @@ const projectsData = [
     image: "/eidos.jpg",
     projectUrl: null,
     githubUrl: "https://github.com/moon-chm/EIDOS",
-  },
-  {
-    title: "Job Portal (Full-Stack Web App)",
-    category: "web",
-    categoryLabel: "Web & Full-Stack",
-    description: "A full-stack recruitment portal featuring tailored company and job-seeker dashboards, real-time application updates, authentication, and administrative oversight.",
-    tags: ["HTML/CSS", "Node.js", "Express", "MongoDB", "Tailwind CSS"],
-    image: "/job.png",
-    projectUrl: "https://job-portal-iota-sand.vercel.app",
-    githubUrl: "https://github.com/moon-chm/Job-portal",
   },
   {
     title: "Portfolio Website",
