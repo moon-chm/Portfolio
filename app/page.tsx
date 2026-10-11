@@ -387,13 +387,24 @@ export default function Portfolio() {
       {/* About Section */}
       <Section id="about" title="About Me" icon={<User className="w-6 h-6" />}>
         <div className="relative grid md:grid-cols-2 gap-12 items-center z-10">
-          <motion.div variants={fadeInVariants} className="relative h-[600px] w-full">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="relative h-[600px] w-full"
+          >
             <div className="absolute inset-0 translate-x-6 translate-y-6 border-4 border-[#D4A373] rounded-lg -z-10" />
             <div className="relative h-full w-full overflow-hidden rounded-lg">
               <Image src="/me.jpeg" alt="Profile" fill className="object-cover" priority />
             </div>
           </motion.div>
-          <motion.div variants={fadeInVariants}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
             <h3 className="text-2xl font-bold text-[#D4A373] mb-4">Who I Am</h3>
             <p className="text-[#D4A373]/80 mb-6">
               I'm a passionate developer with a keen eye for design and a love for creating seamless user experiences.
@@ -472,28 +483,23 @@ export default function Portfolio() {
           })}
         </div>
 
-        <motion.div
-          layout
-          className="grid grid-cols-1 md:grid-cols-2 gap-8"
-        >
-          <AnimatePresence mode="popLayout">
-            {projectsData
-              .filter((p) => activeCategory === "all" || p.category === activeCategory)
-              .map((project, idx) => (
-                <ProjectCard
-                  key={project.title}
-                  title={project.title}
-                  description={project.description}
-                  tags={project.tags}
-                  image={project.image}
-                  categoryLabel={project.categoryLabel}
-                  delay={idx * 0.05}
-                  projectUrl={project.projectUrl}
-                  githubUrl={project.githubUrl}
-                />
-              ))}
-          </AnimatePresence>
-        </motion.div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {projectsData
+            .filter((p) => activeCategory === "all" || p.category === activeCategory)
+            .map((project, idx) => (
+              <ProjectCard
+                key={project.title}
+                title={project.title}
+                description={project.description}
+                tags={project.tags}
+                image={project.image}
+                categoryLabel={project.categoryLabel}
+                delay={(idx % 4) * 0.05}
+                projectUrl={project.projectUrl}
+                githubUrl={project.githubUrl}
+              />
+            ))}
+        </div>
       </Section>
 
       {/* Experience Section */}
@@ -728,28 +734,23 @@ const fadeInVariants = {
 }
 
 function Section({ id, title, icon, children, className = "" }) {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, amount: 0.2 })
-
   return (
-    <section id={id} className={`py-20 ${className}`} ref={ref}>
+    <section id={id} className={`py-20 ${className}`}>
       <div className="container mx-auto px-4">
-        <motion.div
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-          variants={{
-            hidden: { opacity: 0 },
-            visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
-          }}
-          className="space-y-12"
-        >
-          <motion.div variants={fadeInVariants} className="flex flex-col items-center text-center mb-12">
+        <div className="space-y-12">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="flex flex-col items-center text-center mb-12"
+          >
             <div className="bg-[#D4A373] p-3 rounded-full text-white mb-4">{icon}</div>
             <h2 className="text-3xl md:text-4xl font-bold text-[#D4A373]">{title}</h2>
             <div className="w-20 h-1 bg-[#D4A373] mt-4 rounded-full" />
           </motion.div>
           {children}
-        </motion.div>
+        </div>
       </div>
     </section>
   )
@@ -766,8 +767,10 @@ function Pill({ children }) {
 function SkillCard({ title, skills, delay = 0 }) {
   return (
     <motion.div
-      variants={fadeInVariants}
-      transition={{ delay }}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay, duration: 0.4 }}
       className="bg-white rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow"
     >
       <h3 className="text-xl font-bold text-[#D4A373] mb-4">{title}</h3>
@@ -804,11 +807,10 @@ function ProjectCard({
 }) {
   return (
     <motion.div
-      layout
       initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.35, delay }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.4, delay: Math.min(delay, 0.2) }}
       className="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 bg-white border border-[#D4A373]/25 flex flex-col"
     >
       <div className="relative h-60 w-full overflow-hidden bg-[#CCD5AE]/20">
@@ -863,8 +865,10 @@ function ProjectCard({
 function ExperienceItem({ title, company, period, description, delay = 0 }) {
   return (
     <motion.div
-      variants={fadeInVariants}
-      transition={{ delay }}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay, duration: 0.4 }}
       className="relative pl-8 before:absolute before:left-0 before:top-0 before:bottom-0 before:w-0.5 before:bg-[#D4A373]"
     >
       <div className="absolute left-0 top-0 w-4 h-4 rounded-full bg-[#D4A373] -translate-x-1.5" />
