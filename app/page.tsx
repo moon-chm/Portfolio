@@ -626,7 +626,7 @@ export default function Portfolio() {
                 I am a mobile developer and AI enthusiast driven by a simple philosophy: software should be blazingly fast, rock-solid in architecture, and visually delightful.
               </p>
               <p>
-                From building production Android applications at <strong className="text-stone-900 font-semibold">Webtech Developers</strong> to engineering agentic RAG and Knowledge Graph pipelines at <strong className="text-stone-900 font-semibold">Sunbeam Infotech</strong>, I bridge native mobile craftsmanship with scalable backend ecosystems.
+                From building production Android applications to engineering agentic RAG and Knowledge Graph pipelines, I bridge native mobile craftsmanship with scalable backend ecosystems.
               </p>
             </div>
 
