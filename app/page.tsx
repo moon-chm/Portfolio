@@ -476,46 +476,53 @@ export default function Portfolio() {
       <Section id="experience" title="Work Experience" icon={<FileText className="w-6 h-6" />} className="bg-[#FAEDCD]">
         <div className="space-y-12">
           <ExperienceItem
-            title="GDG Hackathon Finalist"
-            company="GDG on Campus, SGU"
-            period="2025"
-            description="Recognized as a finalist for building a comprehensive rural girl empowerment platform featuring a responsive website, WhatsApp-based shopping chatbot, and an emergency SOS mobile application. Spearheaded both frontend and backend development while collaborating on scalable, impactful tech solutions."
+            title="Gen-AI Intern"
+            company="Sunbeam Infotech Private Limited, Pune"
+            period="2025 – 2026"
+            description="Developed Generative AI workflows using LLMs, embeddings, and vector databases (RAG pipelines). Implemented automated data scraping, preprocessing, semantic chunking, and context retrieval systems while collaborating with cross-functional teams to build scalable AI-driven applications."
             delay={0.1}
+          />
+          <ExperienceItem
+            title="Android Developer Intern"
+            company="Webtech Developers, Pune"
+            period="2024 – 2025"
+            description="Engineered and optimized Android applications with modern architecture and responsive UI components. Integrated REST APIs, managed background services, and implemented clean MVVM design patterns to deliver reliable mobile user experiences."
+            delay={0.2}
           />
           <ExperienceItem
             title="Android Developer Intern"
             company="IGap Technologies"
             period="2023 – 2024"
             description="Developed and maintained Android applications with a focus on user-centric design and optimized performance. Worked closely with cross-functional teams to implement new features, resolve bugs, and improve overall app reliability."
-            delay={0.2}
+            delay={0.3}
           />
           <ExperienceItem
-            title="Gen-AI Intern"
-            company="Sunbeam Infotech Private Limited(Pune)"
-            period="2025 – 2026"
-            description="Developed Generative AI workflows using LLMs, embeddings, and vector databases. Implemented data scraping, preprocessing, chunking, and retrieval pipelines while collaborating with cross-functional teams to build scalable AI-driven applications."
-            delay={0.3}
+            title="GDG Hackathon Finalist"
+            company="GDG on Campus, SGU"
+            period="2025"
+            description="Recognized as a finalist for building a comprehensive rural girl empowerment platform featuring a responsive website, WhatsApp-based shopping chatbot, and an emergency SOS mobile application. Spearheaded both frontend and backend development while collaborating on scalable, impactful tech solutions."
+            delay={0.4}
           />
           <ExperienceItem
             title="President, DSSA Student Association"
             company="DKTE"
             period="2025 – 2026"
             description="Elected as DSSA President, where I demonstrated leadership by managing teams, coordinating events, and building strong collaboration between students and faculty to enhance learning beyond the classroom."
-            delay={0.4}
+            delay={0.5}
           />
           <ExperienceItem
             title="President, ITESA Student Association"
             company="Sharad Institute of Technology Polytechnic, Yadrav"
             period="2023 – 2024"
             description="Elected as President of ITESA, where I led a team to plan and execute various technical and co-curricular events. Fostered student engagement, collaborated with faculty, and promoted a culture of innovation and learning across the department."
-            delay={0.5}
+            delay={0.6}
           />
           <ExperienceItem
             title="Diploma in Information Technology"
             company="Sharad Institute of Technology Polytechnic, Yadrav"
-            period=" 2021 –  2024"
+            period="2021 – 2024"
             description="Completed a rigorous three-year diploma with an aggregate score of 88.63%. Gained hands-on experience and foundational expertise in software development, computer networks, database management, and IT systems through academic and project-based learning."
-            delay={0.6}
+            delay={0.7}
           />
         </div>
       </Section>
