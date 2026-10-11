@@ -128,12 +128,22 @@ body {
   will-change: transform, opacity;
 }
 
-/* Horizontal showcase card styles */
+/* Horizontal showcase track with hardware acceleration */
 .showcase-track {
   display: flex;
   gap: 2rem;
   width: max-content;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
   will-change: transform;
+}
+
+@media (max-width: 1023px) {
+  .showcase-track {
+    width: auto;
+    padding-bottom: 1.5rem;
+  }
 }
 
 /* Color animation keyframe for the "Hello, World!" text */
