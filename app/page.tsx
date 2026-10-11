@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from "react"
 import { motion, useScroll, useTransform, useInView, AnimatePresence } from "framer-motion"
-import { ArrowDown, Code, Mail, User, Briefcase, FileText, ExternalLink, Github, X, Menu, Star } from "lucide-react"
+import { ArrowDown, Code, Mail, User, Briefcase, FileText, ExternalLink, Github, X, Menu, Star, Smartphone, Sparkles, Globe, Layers } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import { useToast } from "@/components/ui/use-toast"
@@ -10,9 +10,166 @@ import { useForm } from "react-hook-form"
 // Import Lenis
 import Lenis from "@studio-freight/lenis"
 
+const projectsData = [
+  // --- Android & Mobile Applications (FIRST) ---
+  {
+    title: "CollabSphere",
+    category: "android",
+    categoryLabel: "Android / Mobile",
+    description: "A premium, local-first team collaboration platform featuring a modern Jetpack Compose Android client and Ktor backend with PostgreSQL. Supports real-time messaging, Kanban task boards, notes, and seamless file sync.",
+    tags: ["Android", "Jetpack Compose", "Kotlin", "Ktor", "PostgreSQL", "WebSockets"],
+    image: "/collabsphere.jpg",
+    projectUrl: null,
+    githubUrl: "https://github.com/moon-chm/collabsphere",
+  },
+  {
+    title: "Tracklyst – Coding & Placement Ecosystem",
+    category: "android",
+    categoryLabel: "Android / Mobile",
+    description: "A 3-tier tracking ecosystem (Android faculty app, student web dashboard, and browser extension) monitoring real-time coding progress and placement readiness. Adopted by 70+ students across the college.",
+    tags: ["Android", "Java", "TypeScript", "Next.js", "Firebase", "Chrome Extension"],
+    image: "/tracklyst.png",
+    projectUrl: "https://tracklyst-three.vercel.app",
+    githubUrl: "https://github.com/moon-chm/tracklyst",
+  },
+  {
+    title: "FarmDidi Order Manager",
+    category: "android",
+    categoryLabel: "Android / Mobile",
+    description: "A modern Android application engineered for rural women entrepreneurs to easily manage customer orders, monitor inventory levels, and oversee fulfillment workflows in real-time.",
+    tags: ["Android", "Kotlin", "Android Studio", "Firebase", "MVVM"],
+    image: "/farmdidi.jpg",
+    projectUrl: null,
+    githubUrl: "https://github.com/moon-chm/FarmDidi",
+  },
+  {
+    title: "MCQ Checking using AI (Android App)",
+    category: "android",
+    categoryLabel: "Android / Mobile",
+    description: "An AI-powered Android app that automatically evaluates multiple-choice questions from scanned or captured answer sheets using on-device OCR and ML Kit, generating instant performance analytics.",
+    tags: ["Android", "Kotlin", "ML Kit", "Firebase", "OCR", "Computer Vision"],
+    image: "/mcq.png",
+    projectUrl: null,
+    githubUrl: "https://github.com/moon-chm",
+  },
+  {
+    title: "Alz-AI Companion & Caregiver App",
+    category: "android",
+    categoryLabel: "Android / Mobile",
+    description: "An Android application designed to assist Alzheimer's patients and caregivers. Features seamless photo uploads for disease progression analysis, daily cognitive tracking, and emergency alert mechanisms.",
+    tags: ["Android", "Java", "Python", "FastAPI", "Azure", "Firebase"],
+    image: "/alz.jpeg",
+    projectUrl: null,
+    githubUrl: "https://github.com/moon-chm/Alz-AI_app",
+  },
+  {
+    title: "GuardianSOS – Emergency Safety App",
+    category: "android",
+    categoryLabel: "Android / Mobile",
+    description: "A rapid-action Android emergency safety app featuring one-tap SOS activation, real-time GPS geolocation broadcasting, and automated SMS distress signals to emergency contacts.",
+    tags: ["Android", "Java", "Google Maps API", "SMS Gateway", "GPS"],
+    image: "/sosapp.jpg",
+    projectUrl: null,
+    githubUrl: "https://github.com/moon-chm/sosapp",
+  },
+  {
+    title: "Tic-Tac-Toe Game App",
+    category: "android",
+    categoryLabel: "Android / Mobile",
+    description: "An interactive Android game application designed with modern Material UI, smooth gameplay animations, scoreboard tracking, and multi-mode play.",
+    tags: ["Android", "Java", "Android Studio", "Material Design"],
+    image: "/bird.png",
+    projectUrl: null,
+    githubUrl: "https://github.com/moon-chm/tic-tac-toe_gameApp",
+  },
+
+  // --- Remaining Projects (AI / ML & Full-Stack Web) ---
+  {
+    title: "SMARAN – Smart Memory Assistance & Recall Network",
+    category: "ai",
+    categoryLabel: "AI & ML",
+    description: "An AI-powered cognitive memory care platform utilizing hybrid RAG (Neo4j knowledge graph + FAISS vector search) and real-time voice NLP pipelines to assist dementia patients with associative memory recall.",
+    tags: ["Python", "FastAPI", "Neo4j", "FAISS", "LangChain", "Docker", "LLMs"],
+    image: "/smaran.png",
+    projectUrl: null,
+    githubUrl: "https://github.com/moon-chm/SMARAN",
+  },
+  {
+    title: "Rural Girl's Empowerment Platform",
+    category: "web",
+    categoryLabel: "Web & Full-Stack",
+    description: "GDG Hackathon Finalist project: a comprehensive web platform providing rural girls with digital education access, scholarship discovery, mentorship, and community stories.",
+    tags: ["Next.js", "Tailwind CSS", "Framer Motion", "Firebase", "IBM Watson", "Gemini API"],
+    image: "/rural.jpeg",
+    projectUrl: "https://rural-girls-empowerment-platform.vercel.app/",
+    githubUrl: "https://github.com/moon-chm/RuralGirls_Empowerment_Platform",
+  },
+  {
+    title: "GreenXchange – Urban Greening Platform",
+    category: "web",
+    categoryLabel: "Web & Full-Stack",
+    description: "A decentralized platform incentivizing urban community greening through AI plant recognition, computer vision growth monitoring, and an append-only reward ledger.",
+    tags: ["Next.js", "Python", "Computer Vision", "AI", "PostgreSQL", "Vercel"],
+    image: "/greenxchange.jpg",
+    projectUrl: "https://green-xchange-ten.vercel.app",
+    githubUrl: "https://github.com/moon-chm/GreenXchange",
+  },
+  {
+    title: "MELODUB – AI Music Translation Pipeline",
+    category: "ai",
+    categoryLabel: "AI & ML",
+    description: "An end-to-end AI music translation and dubbing pipeline that isolates vocal tracks, translates lyrical timing and rhythm, and synthesizes target language vocals with stem re-mastering.",
+    tags: ["Python", "Whisper", "Librosa", "PyTorch", "Audio Processing", "AI/ML"],
+    image: "/melodub.jpg",
+    projectUrl: null,
+    githubUrl: "https://github.com/moon-chm/MELODUB",
+  },
+  {
+    title: "Sunbeam Institute AI Chatbot",
+    category: "ai",
+    categoryLabel: "AI & ML",
+    description: "An AI institutional assistant that extracts information from campus web sources via web scraping, NLP, and Retrieval-Augmented Generation (RAG) to provide accurate, real-time responses.",
+    tags: ["Python", "RAG", "LangChain", "NLP", "Embeddings", "Web Scraping"],
+    image: "/sunbeam_chatbot.jpg",
+    projectUrl: null,
+    githubUrl: "https://github.com/moon-chm/Sunbeam_Chatbot",
+  },
+  {
+    title: "EIDOS – Cognitive Proactive AI Assistant",
+    category: "ai",
+    categoryLabel: "AI & ML",
+    description: "A privacy-first cognitive AI companion with a Python/FastAPI brain backend orchestrating mobile tasks, autonomous planning, and contextual vector memory graphs.",
+    tags: ["Python", "FastAPI", "LangChain", "LLM Agents", "Vector Memory"],
+    image: "/eidos.jpg",
+    projectUrl: null,
+    githubUrl: "https://github.com/moon-chm/EIDOS",
+  },
+  {
+    title: "Job Portal (Full-Stack Web App)",
+    category: "web",
+    categoryLabel: "Web & Full-Stack",
+    description: "A full-stack recruitment portal featuring tailored company and job-seeker dashboards, real-time application updates, authentication, and administrative oversight.",
+    tags: ["HTML/CSS", "Node.js", "Express", "MongoDB", "Tailwind CSS"],
+    image: "/job.png",
+    projectUrl: "https://job-portal-iota-sand.vercel.app",
+    githubUrl: "https://github.com/moon-chm/Job-portal",
+  },
+  {
+    title: "Portfolio Website",
+    category: "web",
+    categoryLabel: "Web & Full-Stack",
+    description: "A modern, highly animated developer portfolio built with Next.js, Framer Motion, Lenis smooth scrolling, tailored cream aesthetic, and contact API pipeline.",
+    tags: ["Next.js", "Framer Motion", "Tailwind CSS", "TypeScript", "Lenis"],
+    image: "/port.png",
+    projectUrl: "https://portfolio-lake-mu-66.vercel.app",
+    githubUrl: "https://github.com/moon-chm/Portfolio",
+  },
+]
+
 export default function Portfolio() {
   const { toast } = useToast()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [activeCategory, setActiveCategory] = useState("all")
   const lenisRef = useRef(null)
 
   // Initialize Lenis smooth scrolling
@@ -289,62 +446,54 @@ export default function Portfolio() {
 
       {/* Projects Section */}
       <Section id="projects" title="Featured Projects" icon={<Briefcase className="w-6 h-6" />}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <ProjectCard
-            title="Alzheimer's Cure using AI "
-            description="An AI-powered application aimed at aiding Alzheimer's disease research and treatment. Features include advanced AI models for disease analysis, seamless photo upload from mobile devices to the website for monitoring patient progress, and additional tools to support caregivers and medical professionals."
-            tags={["Tailwind CSS", "Framer Motion", "Next.js", "Android Studio", "Firebase", "Microsoft Azure"]}
-            image="/alz.jpeg"
-            delay={0.4}
-            projectUrl="https://example.com/project4"
-            githubUrl="https://github.com/yourusername/project4"
-          />
-          <ProjectCard
-            title="Rural girl's empowerment"
-            description="A web platform dedicated to empowering rural girls through access to education, digital resources, and community support. The application includes features like scholarship information, mentorship opportunities, skill development content, and a secure space for users to connect and share their stories."
-            tags={["Tailwind CSS", "Framer Motion", "Android Studio", "Firebase", "IBM Watson", "PipeDream", "Gemini API", "Android Studio"]}
-            image="/rural.jpeg"
-            delay={0.4}
-            projectUrl="https://rural-girls-empowerment-platform.vercel.app/"
-            githubUrl="https://github.com/moon-chm/RuralGirls_Empowerment_Platform"
-          />
-          <ProjectCard
-            title="SMARAN – Smart Memory Assistance and Recall Automation Network"
-            description="An AI-powered memory care platform using hybrid RAG (Neo4j + FAISS) for fast retrieval and NLP pipelines to assist dementia patients with real-time voice interaction."
-            tags={["Python", "FastAPI", "Neo4j", "FAISS", "LangChain", "Docker", "LLMs"]}
-            image="/smaran.png"
-            delay={0.3}
-            projectUrl="https://github.com/moon-chm/SMARAN"
-            githubUrl="https://github.com/moon-chm/SMARAN"
-          />
-          <ProjectCard
-            title="Tracklyst – Coding Progress & Placement Tracking Platform"
-            description="A multi-platform system designed to track coding progress and placement readiness. Built as a 3-component ecosystem (browser extension, student dashboard, and faculty portal), enabling real-time monitoring of coding activity and performance insights. Successfully adopted by 70+ students across the college."
-            tags={["TypeScript", "Java", "JavaScript", "HTML", "Android"]}
-            image="/tracklyst.png"
-            delay={0.4}
-            projectUrl="https://github.com/moon-chm/tracklyst"
-            githubUrl="https://github.com/moon-chm/tracklyst"
-          />
-          <ProjectCard
-            title="Job portal (web app)"
-            description="A full-stack job portal with separate dashboards for companies and job seekers. Companies can post and manage job listings, while employees can browse and apply for jobs. Includes user authentication, real-time updates with Firebase, and an admin panel for oversight."
-            tags={["HTML/CSS", "Node.js", "Django", "MongoDB"]}
-            image="/job.png"
-            delay={0.1}
-            projectUrl="https://job-portal-jtlt.onrender.com/"
-            githubUrl="https://github.com/moon-chm/Job-portal"
-          />
-          <ProjectCard
-            title="Portfolio Website"
-            description="A responsive portfolio website with smooth animations and dark mode support."
-            tags={["Next.js", "Framer Motion", "Tailwind CSS", "Nodemailer", "React Hook Form", "Cloudinary "]}
-            image="/port.png"
-            delay={0.2}
-            projectUrl="https://portfolio-ecru-seven-38.vercel.app/"
-            githubUrl="https://github.com/moon-chm/portfolio"
-          />
+        {/* Category Filter Tabs */}
+        <div className="flex flex-wrap justify-center gap-3 mb-10">
+          {[
+            { id: "all", label: "All Projects (Android First)", icon: <Layers className="w-4 h-4 mr-2" /> },
+            { id: "android", label: "Android & Mobile Apps", icon: <Smartphone className="w-4 h-4 mr-2" /> },
+            { id: "ai", label: "AI & Machine Learning", icon: <Sparkles className="w-4 h-4 mr-2" /> },
+            { id: "web", label: "Web & Full-Stack", icon: <Globe className="w-4 h-4 mr-2" /> },
+          ].map((cat) => {
+            const isActive = activeCategory === cat.id
+            return (
+              <button
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.id)}
+                className={`flex items-center px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 shadow-sm ${
+                  isActive
+                    ? "bg-[#D4A373] text-white shadow-md scale-105"
+                    : "bg-white/80 text-[#D4A373] hover:bg-white hover:text-[#b88657] border border-[#D4A373]/20"
+                }`}
+              >
+                {cat.icon}
+                {cat.label}
+              </button>
+            )
+          })}
         </div>
+
+        <motion.div
+          layout
+          className="grid grid-cols-1 md:grid-cols-2 gap-8"
+        >
+          <AnimatePresence mode="popLayout">
+            {projectsData
+              .filter((p) => activeCategory === "all" || p.category === activeCategory)
+              .map((project, idx) => (
+                <ProjectCard
+                  key={project.title}
+                  title={project.title}
+                  description={project.description}
+                  tags={project.tags}
+                  image={project.image}
+                  categoryLabel={project.categoryLabel}
+                  delay={idx * 0.05}
+                  projectUrl={project.projectUrl}
+                  githubUrl={project.githubUrl}
+                />
+              ))}
+          </AnimatePresence>
+        </motion.div>
       </Section>
 
       {/* Experience Section */}
@@ -634,43 +783,77 @@ function SkillCard({ title, skills, delay = 0 }) {
   )
 }
 
-function ProjectCard({ title, description, tags, image, delay = 0, projectUrl, githubUrl }) {
+function ProjectCard({
+  title,
+  description,
+  tags,
+  image,
+  delay = 0,
+  projectUrl,
+  githubUrl,
+  categoryLabel,
+}: {
+  title: string
+  description: string
+  tags: string[]
+  image?: string
+  delay?: number
+  projectUrl?: string | null
+  githubUrl?: string | null
+  categoryLabel?: string
+}) {
   return (
     <motion.div
-      variants={fadeInVariants}
-      transition={{ delay }}
-      className="group relative overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-all duration-300"
+      layout
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{ duration: 0.35, delay }}
+      className="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 bg-white border border-[#D4A373]/25 flex flex-col"
     >
-      <div className="relative h-64 overflow-hidden">
+      <div className="relative h-60 w-full overflow-hidden bg-[#CCD5AE]/20">
         <Image
           src={image || "/placeholder.svg"}
           alt={title}
           fill
-          className="object-cover transition-transform duration-500 group-hover:scale-110"
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-      </div>
-      <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-        <h3 className="text-xl font-bold mb-2">{title}</h3>
-        <p className="text-white/80 mb-4 line-clamp-2">{description}</p>
-        <div className="flex flex-wrap gap-2 mb-4">
-          {tags.map((tag, index) => (
-            <span key={index} className="px-2 py-1 bg-[#D4A373]/80 rounded-full text-xs font-medium">
-              {tag}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
+        {categoryLabel && (
+          <div className="absolute top-3 right-3 z-10">
+            <span className="px-3 py-1 bg-[#D4A373] text-white rounded-full text-xs font-semibold shadow-md">
+              {categoryLabel}
             </span>
-          ))}
+          </div>
+        )}
+      </div>
+      <div className="p-6 flex-1 flex flex-col justify-between bg-stone-900 text-white relative z-10">
+        <div>
+          <h3 className="text-xl font-bold mb-2 text-[#FEFAE0] group-hover:text-[#CCD5AE] transition-colors">{title}</h3>
+          <p className="text-[#FEFAE0]/80 text-sm mb-4 leading-relaxed line-clamp-3">{description}</p>
+          <div className="flex flex-wrap gap-1.5 mb-4">
+            {tags.map((tag, index) => (
+              <span key={index} className="px-2.5 py-0.5 bg-[#D4A373]/30 border border-[#D4A373]/40 rounded-full text-xs font-medium text-[#FEFAE0]">
+                {tag}
+              </span>
+            ))}
+          </div>
         </div>
-        <div className="flex gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
-          <a href={projectUrl} target="_blank" rel="noopener noreferrer">
-            <Button size="sm" variant="default" className="bg-[#D4A373] hover:bg-[#D4A373]/80">
-              <ExternalLink className="w-4 h-4 mr-2" /> View Project
-            </Button>
-          </a>
-          <a href={githubUrl} target="_blank" rel="noopener noreferrer">
-            <Button size="sm" variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
-              <Github className="w-4 h-4 mr-2" /> Code
-            </Button>
-          </a>
+        <div className="flex flex-wrap gap-3 pt-4 border-t border-white/10">
+          {projectUrl && (
+            <a href={projectUrl} target="_blank" rel="noopener noreferrer">
+              <Button size="sm" variant="default" className="bg-[#D4A373] hover:bg-[#D4A373]/80 text-white">
+                <ExternalLink className="w-4 h-4 mr-1.5" /> View Project
+              </Button>
+            </a>
+          )}
+          {githubUrl && (
+            <a href={githubUrl} target="_blank" rel="noopener noreferrer">
+              <Button size="sm" variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
+                <Github className="w-4 h-4 mr-1.5" /> Code
+              </Button>
+            </a>
+          )}
         </div>
       </div>
     </motion.div>
