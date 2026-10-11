@@ -574,9 +574,6 @@ export default function Portfolio() {
               Featured <span className="text-[#D4A373]">Projects</span>
             </h2>
           </div>
-          <p className="text-[#FEFAE0]/70 text-sm md:text-base max-w-md">
-            Scroll smoothly across all Android applications, AI systems, and full-stack web platforms.
-          </p>
         </div>
 
         {/* Category Filter Tabs */}
