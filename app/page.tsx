@@ -1,8 +1,8 @@
 "use client"
 
 import { useRef, useState, useEffect } from "react"
-import { motion, useScroll, useTransform, useInView, AnimatePresence } from "framer-motion"
-import { ArrowDown, Code, Mail, User, Briefcase, FileText, ExternalLink, Github, X, Menu, Star, Smartphone, Sparkles, Globe, Layers } from "lucide-react"
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion"
+import { ArrowDown, Code, Mail, User, Briefcase, FileText, ExternalLink, Github, X, Menu, Smartphone, Sparkles, Globe, Layers, ArrowUp } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import { useToast } from "@/components/ui/use-toast"
@@ -140,37 +140,61 @@ export default function Portfolio() {
   const { toast } = useToast()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [activeCategory, setActiveCategory] = useState("all")
+  const [activeSection, setActiveSection] = useState("home")
+  const [showBackToTop, setShowBackToTop] = useState(false)
   const lenisRef = useRef(null)
+  const heroRef = useRef(null)
 
-  // Initialize Lenis smooth scrolling
+  // Initialize responsive Lenis smooth scrolling
   useEffect(() => {
-    // Initialize Lenis
     const lenis = new Lenis({
-      duration: 1.2, // Animation duration
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Custom easing
-      direction: 'vertical', // Scroll direction
-      gestureDirection: 'vertical', // Gesture direction
-      smooth: true, // Enable smooth scrolling
-      mouseMultiplier: 1, // Mouse wheel multiplier
-      smoothTouch: false, // Disable smooth scrolling on touch devices (better performance)
-      touchMultiplier: 2, // Touch multiplier
-      infinite: false, // Disable infinite scroll
+      duration: 0.9,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      direction: 'vertical',
+      gestureDirection: 'vertical',
+      smooth: true,
+      mouseMultiplier: 1.1,
+      smoothTouch: false,
+      touchMultiplier: 2,
+      infinite: false,
     })
 
-    // Store lenis instance in ref for cleanup and access
     lenisRef.current = lenis
 
-    // Animation frame function for Lenis
     function raf(time) {
       lenis.raf(time)
       requestAnimationFrame(raf)
     }
     requestAnimationFrame(raf)
 
-    // Cleanup function
     return () => {
       lenis.destroy()
     }
+  }, [])
+
+  // Active section scroll spy and Back-to-Top toggle
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowBackToTop(window.scrollY > 400)
+
+      const sections = ["home", "about", "skills", "projects", "experience", "contact"]
+      const scrollPosition = window.scrollY + 200
+
+      for (const sectionId of sections) {
+        const el = document.getElementById(sectionId)
+        if (el) {
+          const top = el.offsetTop
+          const height = el.offsetHeight
+          if (scrollPosition >= top && scrollPosition < top + height) {
+            setActiveSection(sectionId)
+            break
+          }
+        }
+      }
+    }
+
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
   // Close mobile menu when clicking outside
@@ -197,59 +221,69 @@ export default function Portfolio() {
     return () => window.removeEventListener("resize", handleResize)
   }, [mobileMenuOpen])
 
-  const ref = useRef(null)
+  // Scoped hero parallax for maximum frame rate
   const { scrollYProgress } = useScroll({
-    target: ref,
+    target: heroRef,
     offset: ["start start", "end start"],
   })
 
-  const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "100%"])
-  const textY = useTransform(scrollYProgress, [0, 1], ["0%", "200%"])
+  const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"])
+  const textY = useTransform(scrollYProgress, [0, 1], ["0%", "50%"])
 
-  // Updated smooth scroll function for navigation using Lenis
+  // Butter-smooth section navigation
   const scrollToSection = (sectionId) => {
     setMobileMenuOpen(false)
     const element = document.getElementById(sectionId)
-    if (element && lenisRef.current) {
-      // Use Lenis scrollTo method for smooth scrolling
-      const yOffset = -80 // Header height offset
-      const elementPosition = element.offsetTop + yOffset
-
-      lenisRef.current.scrollTo(elementPosition, {
-        duration: 2, // Custom duration for navigation
-        easing: (t) => t * (2 - t), // Custom easing for navigation
-      })
+    if (element) {
+      if (lenisRef.current) {
+        const yOffset = -70
+        const elementPosition = element.offsetTop + yOffset
+        lenisRef.current.scrollTo(elementPosition, {
+          duration: 0.9,
+          easing: (t) => 1 - Math.pow(1 - t, 3),
+        })
+      } else {
+        element.scrollIntoView({ behavior: 'smooth' })
+      }
     }
   }
 
   return (
-    <div className="min-h-screen bg-[#FEFAE0]" ref={ref}>
-      {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-[#FFFFFF]/30 backdrop-blur-sm border-b border-[#D4A373]/20">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+    <div className="min-h-screen bg-[#FEFAE0]">
+      {/* Header with Active State & Glassmorphism */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-[#FEFAE0]/80 backdrop-blur-md border-b border-[#D4A373]/25 shadow-sm transition-all">
+        <div className="container mx-auto px-4 py-3 flex justify-between items-center">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
-            className="text-[#D4A373] font-bold text-xl"
+            className="cursor-pointer font-bold text-xl text-[#D4A373] tracking-tight"
+            onClick={() => scrollToSection("home")}
           >
-            <span className="animate-colorChange">Hello, World!</span>
+            <span className="bg-gradient-to-r from-[#D4A373] to-[#b88657] bg-clip-text text-transparent">Rohit.dev</span>
           </motion.div>
           <motion.nav
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="hidden md:flex space-x-8"
+            className="hidden md:flex space-x-2"
           >
-            {["Home", "About", "Skills", "Projects", "Experience", "Contact"].map((item, i) => (
-              <button
-                key={item}
-                onClick={() => scrollToSection(item.toLowerCase())}
-                className="text-[#000000] hover:text-[#FFFFFF] transition-colors"
-              >
-                {item}
-              </button>
-            ))}
+            {["Home", "About", "Skills", "Projects", "Experience", "Contact"].map((item) => {
+              const isCurrent = activeSection === item.toLowerCase()
+              return (
+                <button
+                  key={item}
+                  onClick={() => scrollToSection(item.toLowerCase())}
+                  className={`px-3.5 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
+                    isCurrent
+                      ? "bg-[#D4A373] text-white shadow-sm font-semibold"
+                      : "text-stone-700 hover:text-[#D4A373] hover:bg-[#D4A373]/10"
+                  }`}
+                >
+                  {item}
+                </button>
+              )
+            })}
           </motion.nav>
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
@@ -259,7 +293,7 @@ export default function Portfolio() {
           >
             <Button
               variant="ghost"
-              className="text-[#D4A373] menu-button"
+              className="text-[#D4A373] menu-button hover:bg-[#D4A373]/10"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -276,19 +310,26 @@ export default function Portfolio() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.2 }}
-            className="fixed top-[72px] left-0 right-0 bg-[#FEFAE0] border-b border-[#D4A373]/20 shadow-lg z-40 mobile-menu"
+            className="fixed top-[60px] left-0 right-0 bg-[#FEFAE0]/95 backdrop-blur-md border-b border-[#D4A373]/30 shadow-xl z-40 mobile-menu"
           >
             <div className="container mx-auto py-4 px-4">
-              <div className="flex flex-col space-y-4">
-                {["Home", "About", "Skills", "Projects", "Experience", "Contact"].map((item, i) => (
-                  <button
-                    key={item}
-                    onClick={() => scrollToSection(item.toLowerCase())}
-                    className="text-[#D4A373] hover:text-[#CCD5AE] transition-colors py-2 text-left"
-                  >
-                    {item}
-                  </button>
-                ))}
+              <div className="flex flex-col space-y-2">
+                {["Home", "About", "Skills", "Projects", "Experience", "Contact"].map((item) => {
+                  const isCurrent = activeSection === item.toLowerCase()
+                  return (
+                    <button
+                      key={item}
+                      onClick={() => scrollToSection(item.toLowerCase())}
+                      className={`py-2 px-4 rounded-lg text-left text-sm font-medium transition-colors ${
+                        isCurrent
+                          ? "bg-[#D4A373] text-white"
+                          : "text-stone-800 hover:text-[#D4A373] hover:bg-[#D4A373]/10"
+                      }`}
+                    >
+                      {item}
+                    </button>
+                  )
+                })}
               </div>
             </div>
           </motion.div>
@@ -296,9 +337,9 @@ export default function Portfolio() {
       </AnimatePresence>
 
       {/* Hero Section */}
-      <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden">
+      <section id="home" ref={heroRef} className="relative h-screen flex items-center justify-center overflow-hidden">
         <motion.div style={{ y: backgroundY }} className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-[#CCD5AE]/30" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#CCD5AE]/20 to-black/30" />
           <div className="h-full w-full bg-[url('/bg2.gif')] bg-cover bg-center" />
         </motion.div>
 
@@ -449,23 +490,23 @@ export default function Portfolio() {
 
       {/* Projects Section */}
       <Section id="projects" title="Featured Projects" icon={<Briefcase className="w-6 h-6" />}>
-        {/* Category Filter Tabs */}
-        <div className="flex flex-wrap justify-center gap-3 mb-10">
+        {/* Category Filter Tabs with Live Counts */}
+        <div className="flex flex-wrap justify-center gap-2.5 mb-10">
           {[
-            { id: "all", label: "All Projects (Android First)", icon: <Layers className="w-4 h-4 mr-2" /> },
-            { id: "android", label: "Android & Mobile Apps", icon: <Smartphone className="w-4 h-4 mr-2" /> },
-            { id: "ai", label: "AI & Machine Learning", icon: <Sparkles className="w-4 h-4 mr-2" /> },
-            { id: "web", label: "Web & Full-Stack", icon: <Globe className="w-4 h-4 mr-2" /> },
+            { id: "all", label: `All Projects (${projectsData.length})`, icon: <Layers className="w-4 h-4 mr-2" /> },
+            { id: "android", label: `Android & Mobile (${projectsData.filter(p => p.category === "android").length})`, icon: <Smartphone className="w-4 h-4 mr-2" /> },
+            { id: "ai", label: `AI & Machine Learning (${projectsData.filter(p => p.category === "ai").length})`, icon: <Sparkles className="w-4 h-4 mr-2" /> },
+            { id: "web", label: `Web & Full-Stack (${projectsData.filter(p => p.category === "web").length})`, icon: <Globe className="w-4 h-4 mr-2" /> },
           ].map((cat) => {
             const isActive = activeCategory === cat.id
             return (
               <button
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id)}
-                className={`flex items-center px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 shadow-sm ${
+                className={`flex items-center px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 shadow-sm active:scale-95 ${
                   isActive
-                    ? "bg-[#D4A373] text-white shadow-md scale-105"
-                    : "bg-white/80 text-[#D4A373] hover:bg-white hover:text-[#b88657] border border-[#D4A373]/20"
+                    ? "bg-[#D4A373] text-white shadow-md scale-105 font-semibold"
+                    : "bg-white/90 text-[#b88657] hover:bg-white hover:text-[#8a5d3b] border border-[#D4A373]/25"
                 }`}
               >
                 {cat.icon}
@@ -722,6 +763,24 @@ export default function Portfolio() {
           </motion.div>
         </div>
       </footer>
+
+      {/* Floating Back to Top Button */}
+      <AnimatePresence>
+        {showBackToTop && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => scrollToSection("home")}
+            className="fixed bottom-6 right-6 z-50 p-3.5 rounded-full bg-[#D4A373] text-white shadow-xl hover:bg-[#b88657] transition-all focus:outline-none focus:ring-2 focus:ring-[#D4A373] focus:ring-offset-2 border border-white/20"
+            aria-label="Back to top"
+          >
+            <ArrowUp className="w-5 h-5" />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
