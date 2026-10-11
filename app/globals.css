@@ -146,6 +146,12 @@ body {
   }
 }
 
+/* Experience Timeline GSAP line progress & glow */
+.timeline-stem-fill {
+  transform-origin: top center;
+  will-change: transform;
+}
+
 /* Color animation keyframe for the "Hello, World!" text */
 @keyframes colorChange {
   0% { color: #D4A373; }

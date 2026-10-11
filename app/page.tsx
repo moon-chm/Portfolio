@@ -148,6 +148,7 @@ export default function Portfolio() {
   const heroRef = useRef<HTMLDivElement | null>(null)
   const showcaseSectionRef = useRef<HTMLDivElement | null>(null)
   const showcaseTrackRef = useRef<HTMLDivElement | null>(null)
+  const experienceContainerRef = useRef<HTMLDivElement | null>(null)
 
   // Initialize responsive Lenis & GSAP ScrollTrigger Synchronization
   useEffect(() => {
@@ -237,9 +238,53 @@ export default function Portfolio() {
       })
     }, showcaseSectionRef)
 
+    // 3. Work Experience Interactive Timeline GSAP Magic
+    const experienceCtx = gsap.context(() => {
+      const container = experienceContainerRef.current
+      if (!container) return
+
+      // Animate vertical progress line drawn down the spine as you scroll
+      gsap.fromTo(
+        ".timeline-stem-fill",
+        { scaleY: 0 },
+        {
+          scaleY: 1,
+          ease: "none",
+          scrollTrigger: {
+            trigger: container,
+            start: "top 75%",
+            end: "bottom 85%",
+            scrub: true,
+          },
+        }
+      )
+
+      // Staggered reveal of experience cards with subtle 3D tilt and elevation
+      const items = gsap.utils.toArray<HTMLElement>(".experience-card-item")
+      items.forEach((item) => {
+        gsap.fromTo(
+          item,
+          { opacity: 0, y: 40, scale: 0.96 },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.7,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: item,
+              start: "top 85%",
+              toggleActions: "play none none reverse",
+            },
+          }
+        )
+      })
+    }, experienceContainerRef)
+
     return () => {
       heroCtx.revert()
       showcaseCtx.revert()
+      experienceCtx.revert()
       gsap.ticker.remove(updateGsapTicker)
       lenis.destroy()
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill())
@@ -563,15 +608,15 @@ export default function Portfolio() {
       <section
         id="projects"
         ref={showcaseSectionRef}
-        className="relative bg-stone-950 text-[#FEFAE0] py-24 overflow-hidden border-y border-[#D4A373]/20"
+        className="relative bg-[#FAEDCD] text-[#D4A373] py-24 overflow-hidden border-y border-[#D4A373]/30"
       >
         <div className="container mx-auto px-6 mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D4A373]/20 border border-[#D4A373]/40 text-[#D4A373] text-xs font-semibold uppercase tracking-wider mb-3">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#D4A373] text-white text-xs font-semibold uppercase tracking-wider mb-3 shadow-sm">
               <Briefcase className="w-3.5 h-3.5" /> Portfolio Showcase
             </div>
-            <h2 className="text-3xl md:text-5xl font-extrabold text-[#FEFAE0] tracking-tight">
-              Featured <span className="text-[#D4A373]">Projects</span>
+            <h2 className="text-3xl md:text-5xl font-extrabold text-[#D4A373] tracking-tight">
+              Featured <span className="text-[#CCD5AE] drop-shadow-sm">Projects</span>
             </h2>
           </div>
         </div>
@@ -590,13 +635,12 @@ export default function Portfolio() {
                 key={cat.id}
                 onClick={() => {
                   setActiveCategory(cat.id)
-                  // Refresh GSAP ScrollTrigger calculation when filter changes
                   setTimeout(() => ScrollTrigger.refresh(), 50)
                 }}
                 className={`flex items-center px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 shadow-sm active:scale-95 ${
                   isActive
                     ? "bg-[#D4A373] text-white shadow-md font-semibold scale-105"
-                    : "bg-stone-900/90 text-[#FEFAE0]/80 hover:bg-stone-800 hover:text-white border border-white/10"
+                    : "bg-white/90 text-[#b88657] hover:bg-white hover:text-[#8a5d3b] border border-[#D4A373]/30"
                 }`}
               >
                 {cat.icon}
@@ -614,41 +658,41 @@ export default function Portfolio() {
               .map((project, index) => (
                 <div
                   key={project.title}
-                  className="w-[85vw] sm:w-[480px] lg:w-[540px] flex-shrink-0 bg-stone-900/95 border border-white/10 rounded-2xl overflow-hidden shadow-2xl flex flex-col group hover:border-[#D4A373]/50 transition-all duration-300"
+                  className="w-[85vw] sm:w-[480px] lg:w-[540px] flex-shrink-0 bg-white border border-[#D4A373]/30 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl flex flex-col group hover:border-[#D4A373] transition-all duration-300"
                 >
-                  <div className="relative h-60 sm:h-64 w-full overflow-hidden bg-black/40">
+                  <div className="relative h-60 sm:h-64 w-full overflow-hidden bg-[#CCD5AE]/20">
                     <Image
                       src={project.image || "/placeholder.svg"}
                       alt={project.title}
                       fill
                       className="object-cover transition-transform duration-700 group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-stone-900 via-transparent to-transparent" />
-                    <div className="absolute top-4 left-4">
-                      <span className="px-3 py-1 bg-black/60 backdrop-blur-md border border-white/20 text-[#FEFAE0] rounded-full text-xs font-semibold">
+                    <div className="absolute inset-0 bg-gradient-to-t from-stone-900/60 via-black/20 to-transparent" />
+                    <div className="absolute top-4 left-4 z-10">
+                      <span className="px-3 py-1 bg-black/60 backdrop-blur-md border border-white/20 text-[#FEFAE0] rounded-full text-xs font-semibold shadow-sm">
                         {String(index + 1).padStart(2, "0")}
                       </span>
                     </div>
-                    <div className="absolute top-4 right-4">
+                    <div className="absolute top-4 right-4 z-10">
                       <span className="px-3 py-1 bg-[#D4A373] text-white rounded-full text-xs font-semibold shadow-md">
                         {project.categoryLabel}
                       </span>
                     </div>
                   </div>
 
-                  <div className="p-6 sm:p-7 flex-1 flex flex-col justify-between">
+                  <div className="p-6 sm:p-7 flex-1 flex flex-col justify-between bg-stone-900 text-white">
                     <div>
                       <h3 className="text-xl sm:text-2xl font-bold text-[#FEFAE0] mb-3 group-hover:text-[#CCD5AE] transition-colors">
                         {project.title}
                       </h3>
-                      <p className="text-[#FEFAE0]/80 text-sm leading-relaxed mb-5 line-clamp-3">
+                      <p className="text-[#FEFAE0]/85 text-sm leading-relaxed mb-5 line-clamp-3">
                         {project.description}
                       </p>
                       <div className="flex flex-wrap gap-2 mb-6">
                         {project.tags.map((tag) => (
                           <span
                             key={tag}
-                            className="px-2.5 py-1 bg-[#D4A373]/15 border border-[#D4A373]/30 rounded-full text-xs font-medium text-[#FEFAE0]"
+                            className="px-2.5 py-1 bg-[#D4A373]/25 border border-[#D4A373]/40 rounded-full text-xs font-medium text-[#FEFAE0]"
                           >
                             {tag}
                           </span>
@@ -662,7 +706,7 @@ export default function Portfolio() {
                           <Button
                             size="sm"
                             variant="outline"
-                            className="w-full bg-white/10 hover:bg-[#D4A373] hover:text-white border-white/20 text-[#FEFAE0] flex items-center justify-center transition-all duration-300"
+                            className="w-full bg-white/10 hover:bg-[#D4A373] hover:border-[#D4A373] hover:text-white border-white/20 text-[#FEFAE0] flex items-center justify-center transition-all duration-300"
                           >
                             <Github className="w-4 h-4 mr-2" /> View Code
                           </Button>
@@ -676,57 +720,62 @@ export default function Portfolio() {
         </div>
       </section>
 
-      {/* Experience Section */}
-      <Section id="experience" title="Work Experience" icon={<FileText className="w-6 h-6" />} className="bg-[#FAEDCD]">
-        <div className="space-y-12">
+      {/* Experience Section with GSAP Dynamic Stem Timeline */}
+      <Section id="experience" title="Work Experience" icon={<FileText className="w-6 h-6" />} className="bg-[#FEFAE0]">
+        <div ref={experienceContainerRef} className="relative max-w-4xl mx-auto pl-6 sm:pl-10 space-y-12">
+          {/* Background Timeline Spine */}
+          <div className="absolute left-2.5 sm:left-4 top-2 bottom-2 w-1 bg-[#D4A373]/20 rounded-full" />
+          {/* GSAP Scrubbed Animated Progress Spine */}
+          <div className="timeline-stem-fill absolute left-2.5 sm:left-4 top-2 bottom-2 w-1 bg-gradient-to-b from-[#D4A373] via-[#b88657] to-[#CCD5AE] rounded-full shadow-sm" />
+
           <ExperienceItem
             title="Gen-AI Intern"
             company="Sunbeam Infotech Private Limited, Pune"
             period="2025 – 2026"
             description="Developed Generative AI workflows using LLMs, embeddings, and vector databases (RAG pipelines). Implemented automated data scraping, preprocessing, semantic chunking, and context retrieval systems while collaborating with cross-functional teams to build scalable AI-driven applications."
-            delay={0.1}
+            roleType="AI & RAG Systems"
           />
           <ExperienceItem
             title="Android Developer Intern"
             company="Webtech Developers, Pune"
             period="2024 – 2025"
             description="Engineered and optimized Android applications with modern architecture and responsive UI components. Integrated REST APIs, managed background services, and implemented clean MVVM design patterns to deliver reliable mobile user experiences."
-            delay={0.2}
+            roleType="Android Architecture"
           />
           <ExperienceItem
             title="Android Developer Intern"
             company="IGap Technologies"
             period="2023 – 2024"
             description="Developed and maintained Android applications with a focus on user-centric design and optimized performance. Worked closely with cross-functional teams to implement new features, resolve bugs, and improve overall app reliability."
-            delay={0.3}
+            roleType="Mobile Engineering"
           />
           <ExperienceItem
             title="GDG Hackathon Finalist"
             company="GDG on Campus, SGU"
             period="2025"
             description="Recognized as a finalist for building a comprehensive rural girl empowerment platform featuring a responsive website, WhatsApp-based shopping chatbot, and an emergency SOS mobile application. Spearheaded both frontend and backend development while collaborating on scalable, impactful tech solutions."
-            delay={0.4}
+            roleType="Hackathon Finalist"
           />
           <ExperienceItem
             title="President, DSSA Student Association"
             company="DKTE"
             period="2025 – 2026"
             description="Elected as DSSA President, where I demonstrated leadership by managing teams, coordinating events, and building strong collaboration between students and faculty to enhance learning beyond the classroom."
-            delay={0.5}
+            roleType="Leadership"
           />
           <ExperienceItem
             title="President, ITESA Student Association"
             company="Sharad Institute of Technology Polytechnic, Yadrav"
             period="2023 – 2024"
             description="Elected as President of ITESA, where I led a team to plan and execute various technical and co-curricular events. Fostered student engagement, collaborated with faculty, and promoted a culture of innovation and learning across the department."
-            delay={0.6}
+            roleType="Leadership"
           />
           <ExperienceItem
             title="Diploma in Information Technology"
             company="Sharad Institute of Technology Polytechnic, Yadrav"
             period="2021 – 2024"
             description="Completed a rigorous three-year diploma with an aggregate score of 88.63%. Gained hands-on experience and foundational expertise in software development, computer networks, database management, and IT systems through academic and project-based learning."
-            delay={0.7}
+            roleType="Education"
           />
         </div>
       </Section>
@@ -986,26 +1035,54 @@ function SkillCard({ title, skills, delay = 0 }) {
 }
 
 
-function ExperienceItem({ title, company, period, description, delay = 0 }) {
+function ExperienceItem({
+  title,
+  company,
+  period,
+  description,
+  roleType,
+}: {
+  title: string
+  company: string
+  period: string
+  description: string
+  roleType?: string
+}) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay, duration: 0.4 }}
-      className="relative pl-8 before:absolute before:left-0 before:top-0 before:bottom-0 before:w-0.5 before:bg-[#D4A373]"
-    >
-      <div className="absolute left-0 top-0 w-4 h-4 rounded-full bg-[#D4A373] -translate-x-1.5" />
-      <div className="mb-2">
-        <h3 className="text-xl font-bold text-[#D4A373]">{title}</h3>
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-[#D4A373]/80">
-          <span>{company}</span>
-          <span className="hidden sm:block">•</span>
-          <span className="text-sm bg-[#D4A373]/10 px-2 py-1 rounded-full inline-block w-fit">{period}</span>
-        </div>
+    <div className="experience-card-item relative pl-6 sm:pl-10 group">
+      {/* Animated Timeline Milestone Node with Ambient Glow */}
+      <div className="absolute -left-[19px] sm:-left-[31px] top-6 w-6 h-6 rounded-full bg-white border-2 border-[#D4A373] flex items-center justify-center shadow-md group-hover:scale-125 group-hover:border-[#CCD5AE] transition-all duration-300 z-10">
+        <div className="w-2.5 h-2.5 rounded-full bg-[#D4A373] group-hover:bg-[#CCD5AE] transition-colors" />
       </div>
-      <p className="text-[#D4A373]/80">{description}</p>
-    </motion.div>
+
+      {/* Modern Card Shell */}
+      <div className="bg-white/95 rounded-2xl p-6 sm:p-7 border border-[#D4A373]/25 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 hover:border-[#D4A373]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+          <div>
+            <h3 className="text-xl sm:text-2xl font-bold text-[#D4A373] tracking-tight group-hover:text-[#b88657] transition-colors">
+              {title}
+            </h3>
+            <p className="text-sm sm:text-base font-semibold text-stone-700 mt-0.5">
+              {company}
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {roleType && (
+              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-[#CCD5AE]/40 text-stone-800 border border-[#CCD5AE]">
+                {roleType}
+              </span>
+            )}
+            <span className="text-xs font-semibold px-3 py-1 rounded-full bg-[#FAEDCD] text-[#D4A373] border border-[#D4A373]/30">
+              {period}
+            </span>
+          </div>
+        </div>
+
+        <p className="text-stone-600 text-sm sm:text-base leading-relaxed pt-2 border-t border-[#D4A373]/15">
+          {description}
+        </p>
+      </div>
+    </div>
   )
 }
 
