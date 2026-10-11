@@ -7,8 +7,10 @@ import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import { useToast } from "@/components/ui/use-toast"
 import { useForm } from "react-hook-form"
-// Import Lenis
+// Import Lenis & GSAP
 import Lenis from "@studio-freight/lenis"
+import gsap from "gsap"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
 
 const projectsData = [
   // --- Android & Mobile Applications (FIRST) ---
@@ -142,11 +144,15 @@ export default function Portfolio() {
   const [activeCategory, setActiveCategory] = useState("all")
   const [activeSection, setActiveSection] = useState("home")
   const [showBackToTop, setShowBackToTop] = useState(false)
-  const lenisRef = useRef(null)
-  const heroRef = useRef(null)
+  const lenisRef = useRef<Lenis | null>(null)
+  const heroRef = useRef<HTMLDivElement | null>(null)
+  const showcaseSectionRef = useRef<HTMLDivElement | null>(null)
+  const showcaseTrackRef = useRef<HTMLDivElement | null>(null)
 
-  // Initialize responsive Lenis smooth scrolling
+  // Initialize responsive Lenis & GSAP ScrollTrigger Synchronization
   useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger)
+
     const lenis = new Lenis({
       duration: 0.9,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -161,14 +167,98 @@ export default function Portfolio() {
 
     lenisRef.current = lenis
 
-    function raf(time) {
-      lenis.raf(time)
-      requestAnimationFrame(raf)
+    // Update ScrollTrigger on every Lenis scroll tick
+    lenis.on('scroll', ScrollTrigger.update)
+
+    // Wire Lenis raf into GSAP ticker for synchronized 60-120fps motion
+    const updateGsapTicker = (time: number) => {
+      lenis.raf(time * 1000)
     }
-    requestAnimationFrame(raf)
+    gsap.ticker.add(updateGsapTicker)
+    gsap.ticker.lagSmoothing(0)
+
+    // 1. Senior Design Hero Entrance Sequence
+    const heroCtx = gsap.context(() => {
+      const heroTl = gsap.timeline({
+        defaults: { ease: "power4.out" },
+        delay: 0.15,
+      })
+
+      heroTl
+        .fromTo(
+          ".hero-eyebrow",
+          { opacity: 0, y: 15 },
+          { opacity: 1, y: 0, duration: 0.8 }
+        )
+        .fromTo(
+          ".hero-title-line",
+          { yPercent: 120, opacity: 0, rotateX: 20 },
+          { yPercent: 0, opacity: 1, rotateX: 0, duration: 1.1, stagger: 0.14, ease: "power3.out" },
+          "-=0.5"
+        )
+        .fromTo(
+          ".hero-desc",
+          { opacity: 0, y: 20 },
+          { opacity: 1, y: 0, duration: 0.9, ease: "power2.out" },
+          "-=0.7"
+        )
+        .fromTo(
+          ".hero-pill-badge",
+          { opacity: 0, scale: 0.9, y: 10 },
+          { opacity: 1, scale: 1, y: 0, duration: 0.6, stagger: 0.08, ease: "back.out(1.5)" },
+          "-=0.6"
+        )
+        .fromTo(
+          ".hero-cta-group",
+          { opacity: 0, y: 25 },
+          { opacity: 1, y: 0, duration: 0.9, ease: "power2.out" },
+          "-=0.6"
+        )
+        .fromTo(
+          ".hero-scroll-indicator",
+          { opacity: 0, y: -10 },
+          { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" },
+          "-=0.4"
+        )
+    }, heroRef)
+
+    // 2. Horizontal Scroll Showcase (Desktop Only, Responsive Cleanup)
+    const showcaseCtx = gsap.context(() => {
+      const track = showcaseTrackRef.current
+      const section = showcaseSectionRef.current
+
+      if (!track || !section) return
+
+      const mm = gsap.matchMedia()
+
+      mm.add("(min-width: 1024px)", () => {
+        // Calculate exact horizontal travel distance
+        const totalScroll = track.scrollWidth - window.innerWidth + 120
+
+        if (totalScroll > 0) {
+          gsap.to(track, {
+            x: () => -totalScroll,
+            ease: "none",
+            scrollTrigger: {
+              trigger: section,
+              start: "top top",
+              end: () => `+=${totalScroll + 200}`,
+              pin: true,
+              scrub: 1,
+              invalidateOnRefresh: true,
+              anticipatePin: 1,
+            },
+          })
+        }
+      })
+    }, showcaseSectionRef)
 
     return () => {
+      heroCtx.revert()
+      showcaseCtx.revert()
+      gsap.ticker.remove(updateGsapTicker)
       lenis.destroy()
+      ScrollTrigger.getAll().forEach((trigger) => trigger.kill())
     }
   }, [])
 
@@ -339,59 +429,76 @@ export default function Portfolio() {
       {/* Hero Section */}
       <section id="home" ref={heroRef} className="relative h-screen flex items-center justify-center overflow-hidden">
         <motion.div style={{ y: backgroundY }} className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-[#CCD5AE]/20 to-black/30" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#CCD5AE]/20 via-[#1e1b18]/50 to-black/70" />
           <div className="h-full w-full bg-[url('/bg2.gif')] bg-cover bg-center" />
         </motion.div>
 
         <div className="container mx-auto px-4 z-20">
-          <motion.div style={{ y: textY }} className="max-w-3xl mx-auto text-center">
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="text-5xl md:text-7xl font-bold text-[#D4A373] mb-6"
-            >
-              Hello, I'm <span className="text-[#CCD5AE]">Rohit</span>
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-xl md:text-2xl text-[#FFFFFF] mb-8"
-            >
-              A passionate developer crafting beautiful digital experiences
-            </motion.p>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center"
-            >
+          <motion.div style={{ y: textY }} className="max-w-4xl mx-auto text-center flex flex-col items-center">
+            {/* Senior Eyebrow Badge */}
+            <div className="hero-eyebrow inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-[#FEFAE0] text-xs md:text-sm font-medium tracking-wide shadow-sm mb-6">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping inline-block" />
+              <span>Available for Full-time Roles & High-Impact Projects</span>
+            </div>
+
+            {/* Cinematic Masked Headline */}
+            <div className="hero-line-mask mb-2">
+              <h1 className="hero-title-line text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-[#FEFAE0] tracking-tight leading-none">
+                Hello, I'm <span className="text-[#D4A373]">Rohit</span>
+              </h1>
+            </div>
+
+            <div className="hero-line-mask mb-6">
+              <h2 className="hero-title-line text-2xl sm:text-4xl md:text-5xl font-extrabold text-[#CCD5AE] tracking-tight">
+                Android & AI Systems Engineer
+              </h2>
+            </div>
+
+            {/* Subtitle / Bio */}
+            <p className="hero-desc text-base sm:text-lg md:text-xl text-[#FEFAE0]/90 max-w-2xl mb-6 leading-relaxed font-normal">
+              Specializing in high-performance Android architectures (Jetpack Compose, Kotlin, MVVM) paired with cognitive AI pipelines & full-stack ecosystems.
+            </p>
+
+            {/* Quick Tech Badges */}
+            <div className="flex flex-wrap gap-2 justify-center mb-8 max-w-xl">
+              {["Jetpack Compose", "Kotlin & Ktor", "Agentic RAG & Neo4j", "Next.js & TypeScript"].map((tech) => (
+                <span key={tech} className="hero-pill-badge px-3 py-1 rounded-full bg-black/40 backdrop-blur-sm border border-white/10 text-xs font-medium text-[#FEFAE0]/90">
+                  {tech}
+                </span>
+              ))}
+            </div>
+
+            {/* CTAs */}
+            <div className="hero-cta-group flex flex-col sm:flex-row gap-4 justify-center w-full sm:w-auto">
               <Button
-                className="bg-[#D4A373] hover:bg-[#D4A373]/80 text-white"
-                onClick={() => scrollToSection("projects")}
+                size="lg"
+                className="bg-[#D4A373] hover:bg-[#b88657] text-white px-8 py-6 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95"
+                onClick={() => scrollToSection("featured-showcase")}
               >
-                View My Work
+                Explore Featured Work
               </Button>
               <Button
+                size="lg"
                 variant="outline"
-                className="border-[#D4A373] text-[#D4A373] hover:bg-[#D4A373]/10"
+                className="bg-black/30 hover:bg-white/10 border-white/30 text-[#FEFAE0] px-8 py-6 rounded-full font-semibold backdrop-blur-sm transition-all duration-300 hover:scale-105 active:scale-95"
                 onClick={() => scrollToSection("contact")}
               >
-                Contact Me
+                Let's Talk
               </Button>
-            </motion.div>
+            </div>
           </motion.div>
         </div>
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.6, repeat: Number.POSITIVE_INFINITY, repeatType: "reverse" }}
-          className="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-20 cursor-pointer"
+          animate={{ y: [0, 8, 0] }}
+          transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+          className="hero-scroll-indicator absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 cursor-pointer flex flex-col items-center gap-1 group"
           onClick={() => scrollToSection("about")}
         >
-          <ArrowDown className="text-[#D4A373] w-8 h-8" />
+          <span className="text-[11px] tracking-widest uppercase font-semibold text-[#FEFAE0]/70 group-hover:text-[#D4A373] transition-colors">
+            Scroll to explore
+          </span>
+          <ArrowDown className="text-[#D4A373] w-5 h-5 group-hover:translate-y-1 transition-transform" />
         </motion.div>
       </section>
 
@@ -488,8 +595,96 @@ export default function Portfolio() {
         </div>
       </Section>
 
+      {/* GSAP Scroll-Driven Horizontal Showcase (Award-Winning Featured Carousel) */}
+      <section
+        id="featured-showcase"
+        ref={showcaseSectionRef}
+        className="relative bg-stone-950 text-[#FEFAE0] py-24 overflow-hidden border-y border-[#D4A373]/20"
+      >
+        <div className="container mx-auto px-6 mb-12 flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D4A373]/20 border border-[#D4A373]/40 text-[#D4A373] text-xs font-semibold uppercase tracking-wider mb-3">
+              <Sparkles className="w-3.5 h-3.5" /> Flagship Works
+            </div>
+            <h2 className="text-3xl md:text-5xl font-extrabold text-[#FEFAE0] tracking-tight">
+              Featured <span className="text-[#D4A373]">Spotlights</span>
+            </h2>
+          </div>
+          <p className="text-[#FEFAE0]/70 text-sm md:text-base max-w-md">
+            Scroll vertically to scrub horizontally through my key Android and AI system architectures.
+          </p>
+        </div>
+
+        {/* Track Container */}
+        <div className="px-6 md:px-12 overflow-x-auto lg:overflow-x-visible">
+          <div ref={showcaseTrackRef} className="showcase-track flex gap-8 pb-4">
+            {projectsData.slice(0, 5).map((project, index) => (
+              <div
+                key={project.title}
+                className="w-[85vw] sm:w-[480px] lg:w-[560px] flex-shrink-0 bg-stone-900/90 border border-white/10 rounded-2xl overflow-hidden shadow-2xl flex flex-col group hover:border-[#D4A373]/50 transition-all duration-300"
+              >
+                <div className="relative h-64 sm:h-72 w-full overflow-hidden bg-black/40">
+                  <Image
+                    src={project.image || "/placeholder.svg"}
+                    alt={project.title}
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-stone-900 via-transparent to-transparent" />
+                  <div className="absolute top-4 left-4">
+                    <span className="px-3 py-1 bg-black/60 backdrop-blur-md border border-white/20 text-[#FEFAE0] rounded-full text-xs font-semibold">
+                      0{index + 1}
+                    </span>
+                  </div>
+                  <div className="absolute top-4 right-4">
+                    <span className="px-3 py-1 bg-[#D4A373] text-white rounded-full text-xs font-semibold shadow-md">
+                      {project.categoryLabel}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-6 sm:p-8 flex-1 flex flex-col justify-between">
+                  <div>
+                    <h3 className="text-2xl font-bold text-[#FEFAE0] mb-3 group-hover:text-[#CCD5AE] transition-colors">
+                      {project.title}
+                    </h3>
+                    <p className="text-[#FEFAE0]/80 text-sm leading-relaxed mb-6 line-clamp-3">
+                      {project.description}
+                    </p>
+                    <div className="flex flex-wrap gap-2 mb-6">
+                      {project.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="px-2.5 py-1 bg-[#D4A373]/15 border border-[#D4A373]/30 rounded-full text-xs font-medium text-[#FEFAE0]"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="pt-4 border-t border-white/10">
+                    {project.githubUrl && (
+                      <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="block w-full">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="w-full bg-white/10 hover:bg-[#D4A373] hover:text-white border-white/20 text-[#FEFAE0] flex items-center justify-center transition-all duration-300"
+                        >
+                          <Github className="w-4 h-4 mr-2" /> Inspect Source Code
+                        </Button>
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Projects Section */}
-      <Section id="projects" title="Featured Projects" icon={<Briefcase className="w-6 h-6" />}>
+      <Section id="projects" title="All Projects & Archives" icon={<Briefcase className="w-6 h-6" />}>
         {/* Category Filter Tabs with Live Counts */}
         <div className="flex flex-wrap justify-center gap-2.5 mb-10">
           {[

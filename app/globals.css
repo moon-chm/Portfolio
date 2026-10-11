@@ -117,6 +117,25 @@ body {
   position: fixed !important;
 }
 
+/* Line reveal mask utilities for GSAP */
+.hero-line-mask {
+  overflow: hidden;
+  padding-bottom: 0.15em;
+  margin-bottom: -0.15em;
+}
+
+.gsap-reveal-element {
+  will-change: transform, opacity;
+}
+
+/* Horizontal showcase card styles */
+.showcase-track {
+  display: flex;
+  gap: 2rem;
+  width: max-content;
+  will-change: transform;
+}
+
 /* Color animation keyframe for the "Hello, World!" text */
 @keyframes colorChange {
   0% { color: #D4A373; }
