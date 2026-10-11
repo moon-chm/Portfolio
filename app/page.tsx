@@ -785,19 +785,19 @@ export default function Portfolio() {
                     </div>
                   </div>
 
-                  <div className="p-6 sm:p-7 flex-1 flex flex-col justify-between bg-stone-900 text-white">
+                  <div className="p-6 sm:p-7 flex-1 flex flex-col justify-between bg-white text-stone-800">
                     <div>
-                      <h3 className="text-xl sm:text-2xl font-bold text-[#FEFAE0] mb-3 group-hover:text-[#CCD5AE] transition-colors">
+                      <h3 className="text-xl sm:text-2xl font-bold text-[#D4A373] mb-3 group-hover:text-[#b88657] transition-colors">
                         {project.title}
                       </h3>
-                      <p className="text-[#FEFAE0]/85 text-sm leading-relaxed mb-5 line-clamp-3">
+                      <p className="text-stone-600 text-sm leading-relaxed mb-5 line-clamp-3">
                         {project.description}
                       </p>
                       <div className="flex flex-wrap gap-2 mb-6">
                         {project.tags.map((tag) => (
                           <span
                             key={tag}
-                            className="px-2.5 py-1 bg-[#D4A373]/25 border border-[#D4A373]/40 rounded-full text-xs font-medium text-[#FEFAE0]"
+                            className="px-2.5 py-1 bg-[#FAEDCD] text-[#b88657] border border-[#D4A373]/30 rounded-full text-xs font-semibold shadow-2xs"
                           >
                             {tag}
                           </span>
@@ -805,13 +805,13 @@ export default function Portfolio() {
                       </div>
                     </div>
 
-                    <div className="pt-4 border-t border-white/10">
+                    <div className="pt-4 border-t border-[#D4A373]/20">
                       {project.githubUrl && (
                         <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="block w-full">
                           <Button
                             size="sm"
                             variant="outline"
-                            className="w-full bg-white/10 hover:bg-[#D4A373] hover:border-[#D4A373] hover:text-white border-white/20 text-[#FEFAE0] flex items-center justify-center transition-all duration-300"
+                            className="w-full bg-[#FAEDCD]/50 hover:bg-[#D4A373] hover:text-white border-[#D4A373]/40 text-[#b88657] flex items-center justify-center font-semibold transition-all duration-300"
                           >
                             <Github className="w-4 h-4 mr-2" /> View Code
                           </Button>
