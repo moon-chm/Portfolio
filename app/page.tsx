@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from "react"
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion"
-import { ArrowDown, Code, Mail, User, Briefcase, FileText, ExternalLink, Github, X, Menu, Smartphone, Sparkles, Globe, Layers, ArrowUp } from "lucide-react"
+import { ArrowDown, Code, Mail, User, Briefcase, FileText, Github, X, Menu, Smartphone, Sparkles, Globe, Layers, ArrowUp } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import { useToast } from "@/components/ui/use-toast"
@@ -900,17 +900,10 @@ function ProjectCard({
           </div>
         </div>
         <div className="flex flex-wrap gap-3 pt-4 border-t border-white/10">
-          {projectUrl && (
-            <a href={projectUrl} target="_blank" rel="noopener noreferrer">
-              <Button size="sm" variant="default" className="bg-[#D4A373] hover:bg-[#D4A373]/80 text-white">
-                <ExternalLink className="w-4 h-4 mr-1.5" /> View Project
-              </Button>
-            </a>
-          )}
           {githubUrl && (
-            <a href={githubUrl} target="_blank" rel="noopener noreferrer">
-              <Button size="sm" variant="outline" className="bg-white/10 border-white/20 text-white hover:bg-white/20">
-                <Github className="w-4 h-4 mr-1.5" /> Code
+            <a href={githubUrl} target="_blank" rel="noopener noreferrer" className="w-full">
+              <Button size="sm" variant="outline" className="w-full bg-white/10 hover:bg-[#D4A373]/30 border-white/20 hover:border-[#D4A373]/50 text-[#FEFAE0] flex items-center justify-center transition-all duration-200">
+                <Github className="w-4 h-4 mr-2" /> View Code
               </Button>
             </a>
           )}

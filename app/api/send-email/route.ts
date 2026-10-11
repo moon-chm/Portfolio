@@ -2,86 +2,175 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import nodemailer from "nodemailer";
 
+// In-memory rate limiting map: ip -> timestamps[]
+const rateLimitMap = new Map<string, number[]>();
+const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000; // 10 minutes
+const MAX_REQUESTS_PER_WINDOW = 5; // Max 5 requests per 10 min
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const timestamps = rateLimitMap.get(ip) || [];
+
+  // Filter timestamps within window
+  const recentTimestamps = timestamps.filter(
+    (timestamp) => now - timestamp < RATE_LIMIT_WINDOW_MS
+  );
+
+  if (recentTimestamps.length >= MAX_REQUESTS_PER_WINDOW) {
+    rateLimitMap.set(ip, recentTimestamps);
+    return true;
+  }
+
+  recentTimestamps.push(now);
+  rateLimitMap.set(ip, recentTimestamps);
+
+  // Periodic cleanup if map grows too large
+  if (rateLimitMap.size > 1000) {
+    for (const [key, times] of rateLimitMap.entries()) {
+      const validTimes = times.filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
+      if (validTimes.length === 0) {
+        rateLimitMap.delete(key);
+      } else {
+        rateLimitMap.set(key, validTimes);
+      }
+    }
+  }
+
+  return false;
+}
+
+// Strict schema validation with length constraints
 const emailSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  email: z.string().email("Invalid email"),
-  subject: z.string().min(1, "Subject is required"),
-  message: z.string().min(10, "Message too short"),
+  name: z
+    .string()
+    .trim()
+    .min(1, "Name is required")
+    .max(100, "Name must be less than 100 characters"),
+  email: z
+    .string()
+    .trim()
+    .email("Invalid email address")
+    .max(120, "Email must be less than 120 characters"),
+  subject: z
+    .string()
+    .trim()
+    .min(1, "Subject is required")
+    .max(150, "Subject must be less than 150 characters"),
+  message: z
+    .string()
+    .trim()
+    .min(10, "Message must be at least 10 characters")
+    .max(3000, "Message must be less than 3000 characters"),
 });
+
+// HTML escaping helper to prevent HTML injection in emails
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
 
 export async function POST(request: Request) {
   try {
-    // Parse and validate request JSON body
-    const body = await request.json();
-    const result = emailSchema.safeParse(body);
+    // 1. IP extraction & rate limiting
+    const forwarded = request.headers.get("x-forwarded-for");
+    const ip = forwarded
+      ? forwarded.split(",")[0].trim()
+      : request.headers.get("x-real-ip") || "unknown-ip";
 
+    if (isRateLimited(ip)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Too many messages sent. Please wait a few minutes before trying again.",
+        },
+        { status: 429 }
+      );
+    }
+
+    // 2. Body parsing and schema validation
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json(
+        { success: false, error: "Invalid JSON payload." },
+        { status: 400 }
+      );
+    }
+
+    const result = emailSchema.safeParse(body);
     if (!result.success) {
       return NextResponse.json(
-        { success: false, error: result.error.errors },
+        {
+          success: false,
+          error: result.error.errors[0]?.message || "Validation failed.",
+        },
         { status: 400 }
       );
     }
 
     const { name, email, subject, message } = result.data;
 
-    // Log env vars for debugging
-    console.log("Email env:", {
-      user: process.env.EMAIL_USER,
-      passSet: !!process.env.EMAIL_PASSWORD,
-      server: process.env.EMAIL_SERVER,
-      port: process.env.EMAIL_PORT,
-    });
+    // 3. Verify server environment configuration without leaking credentials
+    const emailUser = process.env.EMAIL_USER;
+    const emailPassword = process.env.EMAIL_PASSWORD;
+    const emailServer = process.env.EMAIL_SERVER;
+    const emailPort = process.env.EMAIL_PORT;
 
-    // Check env variables are set
-    if (
-      !process.env.EMAIL_USER ||
-      !process.env.EMAIL_PASSWORD ||
-      !process.env.EMAIL_SERVER ||
-      !process.env.EMAIL_PORT
-    ) {
+    if (!emailUser || !emailPassword || !emailServer || !emailPort) {
+      console.error("[Email Security] Missing required email environment variables.");
       return NextResponse.json(
-        { success: false, error: "Email environment variables are not set." },
-        { status: 500 }
+        { success: false, error: "Email service is temporarily unavailable. Please try again later." },
+        { status: 503 }
       );
     }
 
-    const cleanPassword = process.env.EMAIL_PASSWORD.trim().replace(/\s+/g, "");
+    const cleanPassword = emailPassword.trim().replace(/\s+/g, "");
 
-    // Create nodemailer transporter
+    // 4. Create hardened nodemailer transporter (no sensitive logs/debugging)
     const transporter = nodemailer.createTransport(
-      process.env.EMAIL_SERVER === "smtp.gmail.com"
+      emailServer === "smtp.gmail.com"
         ? {
             service: "gmail",
             auth: {
-              user: process.env.EMAIL_USER.trim(),
+              user: emailUser.trim(),
               pass: cleanPassword,
             },
-            logger: true,
-            debug: true,
+            logger: false,
+            debug: false,
           }
         : {
-            host: process.env.EMAIL_SERVER,
-            port: Number(process.env.EMAIL_PORT),
-            secure: process.env.EMAIL_PORT === "465",
+            host: emailServer,
+            port: Number(emailPort),
+            secure: emailPort === "465",
             auth: {
-              user: process.env.EMAIL_USER.trim(),
+              user: emailUser.trim(),
               pass: cleanPassword,
             },
-            logger: true,
-            debug: true,
+            logger: false,
+            debug: false,
           }
     );
 
-    // Verify SMTP connection configuration
+    // Verify SMTP connection
     await transporter.verify();
-    console.log("SMTP server is ready");
 
-    // Mail options
+    // 5. Sanitize fields for HTML email to prevent injection attacks
+    const safeName = escapeHtml(name);
+    const safeEmail = escapeHtml(email);
+    const safeSubject = escapeHtml(subject);
+    const safeMessage = escapeHtml(message);
+
+    // 6. Mail options with sanitized content
     const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: process.env.EMAIL_USER, // you can change this if you want to receive on a different address
+      from: emailUser.trim(),
+      to: emailUser.trim(),
       replyTo: email,
-      subject: `Portfolio Contact: ${subject}`,
+      subject: `Portfolio Contact: ${subject.replace(/[\r\n]/g, "")}`, // prevent header injection
       text: `
 New message from your portfolio:
 
@@ -91,65 +180,50 @@ Subject: ${subject}
 
 Message:
 ${message}
-      `,
+      `.trim(),
       html: `
 <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; padding: 30px; background: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); color: #222;">
-  <img 
-  src="https://res.cloudinary.com/dfnmvchin/image/upload/v1747655895/Don_t_watch_the_clock_do_what_it_does._Keep_going_b7qsbs.png" 
-  alt="Motivational Quote" 
-  style="max-width: 100%; height: auto; border-radius: 10px;"
-/>
-
   <header style="text-align: center; margin-bottom: 25px;">
-   <h2 style="color: #ff6f61; font-weight: 700; font-size: 24px; margin: 0;">
-  🚀 You've Got Mail from Your Portfolio!
-</h2>
+    <h2 style="color: #D4A373; font-weight: 700; font-size: 24px; margin: 0;">
+      🚀 New Message from Portfolio
+    </h2>
   </header>
 
-  <section style="background: #f5f8fa; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
-    <p style="margin: 8px 0;"><strong>👤 Name:</strong> ${name}</p>
-    <p style="margin: 8px 0;"><strong>📫 Email:</strong> <a href="mailto:${email}" style="color: #4a90e2; text-decoration: none;">${email}</a></p>
-    <p style="margin: 8px 0;"><strong>📋 Subject:</strong> ${subject}</p>
+  <section style="background: #fdfaf6; border: 1px solid #FAEDCD; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+    <p style="margin: 8px 0;"><strong>👤 Name:</strong> ${safeName}</p>
+    <p style="margin: 8px 0;"><strong>📫 Email:</strong> <a href="mailto:${safeEmail}" style="color: #D4A373; text-decoration: none;">${safeEmail}</a></p>
+    <p style="margin: 8px 0;"><strong>📋 Subject:</strong> ${safeSubject}</p>
   </section>
 
-  <section style="background: #fff; padding: 20px; border-left: 6px solid #4a90e2; border-radius: 0 8px 8px 0;">
-    <h3 style="color: #4a90e2; margin-top: 0; margin-bottom: 15px;">💬 Message:</h3>
-    <p style="white-space: pre-line; font-size: 16px; line-height: 1.5; color: #333;">
-      ${message}
+  <section style="background: #fff; padding: 20px; border-left: 5px solid #D4A373; border-radius: 0 8px 8px 0; border-top: 1px solid #f0f0f0; border-right: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0;">
+    <h3 style="color: #D4A373; margin-top: 0; margin-bottom: 15px;">💬 Message:</h3>
+    <p style="white-space: pre-line; font-size: 15px; line-height: 1.6; color: #333;">
+      ${safeMessage}
     </p>
   </section>
 
   <footer style="text-align: center; margin-top: 35px; font-size: 12px; color: #999;">
-    <p>Sent from your portfolio contact form</p>
+    <p>Sent securely from your portfolio contact form</p>
   </footer>
-
 </div>
-
-      `,
+      `.trim(),
     };
 
-    // Send email
-    const info = await transporter.sendMail(mailOptions);
-    console.log("Email sent successfully:", info.messageId);
+    // 7. Send email
+    await transporter.sendMail(mailOptions);
 
-    // Success response
     return NextResponse.json({
       success: true,
       message: "Thank you for your message! I'll get back to you soon.",
     });
   } catch (error: any) {
-    console.error("Detailed error:", error);
-
-    const isAuthError = error?.code === "EAUTH" || error?.responseCode === 535;
-    const errorMessage = isAuthError
-      ? "Gmail authentication failed. Please check that your Gmail App Password in .env.local is valid and active."
-      : "Failed to send email. Please try again later.";
+    // Log server-side only without exposing sensitive internals to caller
+    console.error("[Email Send Error]:", error?.message || error);
 
     return NextResponse.json(
       {
         success: false,
-        error: errorMessage,
-        details: error?.message || undefined,
+        error: "Failed to send message. Please try again later or reach out directly on LinkedIn / GitHub.",
       },
       { status: 500 }
     );
