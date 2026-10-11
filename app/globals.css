@@ -141,8 +141,14 @@ body {
 
 @media (max-width: 1023px) {
   .showcase-track {
-    width: auto;
+    width: max-content;
     padding-bottom: 1.5rem;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+  }
+
+  .showcase-track > div {
+    scroll-snap-align: center;
   }
 }
 
