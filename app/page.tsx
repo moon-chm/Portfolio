@@ -146,6 +146,7 @@ export default function Portfolio() {
   const [showBackToTop, setShowBackToTop] = useState(false)
   const lenisRef = useRef<Lenis | null>(null)
   const heroRef = useRef<HTMLDivElement | null>(null)
+  const aboutSectionRef = useRef<HTMLDivElement | null>(null)
   const showcaseSectionRef = useRef<HTMLDivElement | null>(null)
   const showcaseTrackRef = useRef<HTMLDivElement | null>(null)
   const experienceContainerRef = useRef<HTMLDivElement | null>(null)
@@ -205,7 +206,59 @@ export default function Portfolio() {
         )
     }, heroRef)
 
-    // 2. Horizontal Scroll Showcase (Desktop Only, Responsive Cleanup)
+    // 2. About Me 3D Assemble Magic (Flying components dock into place on scroll)
+    const aboutCtx = gsap.context(() => {
+      const section = aboutSectionRef.current
+      if (!section) return
+
+      const aboutTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: "top 75%",
+          end: "top 25%",
+          toggleActions: "play none none reverse",
+        },
+        defaults: { ease: "power3.out" },
+      })
+
+      // Photo frame flies from left with rotation & perspective
+      aboutTl
+        .fromTo(
+          ".about-photo-frame",
+          { opacity: 0, x: -120, y: 60, rotationY: -35, rotationZ: -8, scale: 0.85 },
+          { opacity: 1, x: 0, y: 0, rotationY: 0, rotationZ: 0, scale: 1, duration: 1.1 }
+        )
+        // Accent border offset snaps into place
+        .fromTo(
+          ".about-photo-border",
+          { opacity: 0, x: 30, y: -30, scale: 1.1 },
+          { opacity: 1, x: 24, y: 24, scale: 1, duration: 0.9, ease: "back.out(1.7)" },
+          "-=0.8"
+        )
+        // Bio text blocks swoop in with staggered assembly
+        .fromTo(
+          ".about-text-block",
+          { opacity: 0, x: 80, y: 40, rotationX: 25 },
+          { opacity: 1, x: 0, y: 0, rotationX: 0, duration: 0.9, stagger: 0.12 },
+          "-=0.9"
+        )
+        // Floating credential stat chips fly in from different 3D angles
+        .fromTo(
+          ".about-stat-chip",
+          { opacity: 0, y: 50, scale: 0.7, rotationZ: (i) => (i % 2 === 0 ? -12 : 12) },
+          { opacity: 1, y: 0, scale: 1, rotationZ: 0, duration: 0.8, stagger: 0.1, ease: "back.out(2)" },
+          "-=0.6"
+        )
+        // Trait pills fly up and magnetize into position
+        .fromTo(
+          ".about-pill-item",
+          { opacity: 0, y: 30, scale: 0.6 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.08, ease: "back.out(2.2)" },
+          "-=0.5"
+        )
+    }, aboutSectionRef)
+
+    // 3. Horizontal Scroll Showcase (Desktop Only, Responsive Cleanup)
     const showcaseCtx = gsap.context(() => {
       const track = showcaseTrackRef.current
       const section = showcaseSectionRef.current
@@ -238,7 +291,7 @@ export default function Portfolio() {
       })
     }, showcaseSectionRef)
 
-    // 3. Work Experience Interactive Timeline GSAP Magic
+    // 4. Work Experience Interactive Timeline GSAP Magic
     const experienceCtx = gsap.context(() => {
       const container = experienceContainerRef.current
       if (!container) return
@@ -283,6 +336,7 @@ export default function Portfolio() {
 
     return () => {
       heroCtx.revert()
+      aboutCtx.revert()
       showcaseCtx.revert()
       experienceCtx.revert()
       gsap.ticker.remove(updateGsapTicker)
@@ -511,43 +565,94 @@ export default function Portfolio() {
         </motion.div>
       </section>
 
-      {/* About Section */}
+      {/* About Section with GSAP 3D Assembly Magic */}
       <Section id="about" title="About Me" icon={<User className="w-6 h-6" />}>
-        <div className="relative grid md:grid-cols-2 gap-12 items-center z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="relative h-[600px] w-full"
-          >
-            <div className="absolute inset-0 translate-x-6 translate-y-6 border-4 border-[#D4A373] rounded-lg -z-10" />
-            <div className="relative h-full w-full overflow-hidden rounded-lg">
-              <Image src="/me.jpeg" alt="Profile" fill className="object-cover" priority />
+        <div ref={aboutSectionRef} className="about-assemble-stage relative grid md:grid-cols-12 gap-12 items-center z-10 py-6">
+          {/* Left Column: Flying 3D Photo & Dynamic Snapping Offset Border */}
+          <div className="md:col-span-5 relative">
+            <div className="relative mx-auto max-w-[380px] md:max-w-none h-[480px] sm:h-[540px] w-full">
+              {/* Offset Accent Border that snaps into position */}
+              <div className="about-photo-border absolute inset-0 border-4 border-[#D4A373] rounded-2xl -z-10" />
+
+              {/* Main Photo Frame that glides in from perspective angle */}
+              <div className="about-photo-frame relative h-full w-full overflow-hidden rounded-2xl shadow-2xl border border-white/40 bg-white">
+                <Image
+                  src="/me.jpeg"
+                  alt="Rohit Kumbhar"
+                  fill
+                  className="object-cover object-center"
+                  priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+              </div>
+
+              {/* Floating Stat Badge 1: Experience */}
+              <div className="about-stat-chip absolute -bottom-5 -left-4 sm:-left-6 bg-white/95 backdrop-blur-md border border-[#D4A373]/30 px-4 py-3 rounded-2xl shadow-xl flex items-center gap-3 z-20">
+                <div className="w-10 h-10 rounded-xl bg-[#FAEDCD] flex items-center justify-center text-[#D4A373] font-bold text-lg">
+                  🚀
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Engineering Focus</p>
+                  <p className="text-sm font-bold text-stone-800">Android & Gen-AI</p>
+                </div>
+              </div>
+
+              {/* Floating Stat Badge 2: Adopted Products */}
+              <div className="about-stat-chip absolute -top-4 -right-4 sm:-right-6 bg-white/95 backdrop-blur-md border border-[#D4A373]/30 px-4 py-3 rounded-2xl shadow-xl flex items-center gap-3 z-20">
+                <div className="w-10 h-10 rounded-xl bg-[#CCD5AE]/40 flex items-center justify-center text-emerald-700 font-bold text-lg">
+                  ⚡
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Active Adoption</p>
+                  <p className="text-sm font-bold text-stone-800">70+ Campus Users</p>
+                </div>
+              </div>
             </div>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <h3 className="text-2xl font-bold text-[#D4A373] mb-4">Who I Am</h3>
-            <p className="text-[#D4A373]/80 mb-6">
-              I'm a passionate developer with a keen eye for design and a love for creating seamless user experiences.
-              With a background in both design and development, I bring a unique perspective to every project I work on.
-            </p>
-            <p className="text-[#D4A373]/80 mb-6">
-              My journey in tech began when I discovered my passion for problem-solving and creativity. Since then, I've
-              been on a continuous learning path, exploring new technologies and methodologies to enhance my skills.
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <Pill>Creative Thinker</Pill>
-              <Pill>Problem Solver</Pill>
-              <Pill>Detail Oriented</Pill>
-              <Pill>Team Player</Pill>
+          </div>
+
+          {/* Right Column: Flying Bio Blocks & Magnetized Trait Pills */}
+          <div className="md:col-span-7 flex flex-col justify-center space-y-6">
+            <div className="about-text-block">
+              <span className="inline-block text-xs uppercase tracking-widest font-bold px-3 py-1 bg-[#D4A373]/15 text-[#D4A373] rounded-full border border-[#D4A373]/30 mb-3">
+                Craftsmanship & Architecture
+              </span>
+              <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#D4A373] tracking-tight">
+                Architecting Native Mobile Platforms & Cognitive Systems
+              </h3>
             </div>
-          </motion.div>
+
+            <div className="about-text-block space-y-4 text-stone-700 text-base sm:text-lg leading-relaxed font-normal">
+              <p>
+                I am a mobile developer and AI enthusiast driven by a simple philosophy: software should be blazingly fast, rock-solid in architecture, and visually delightful.
+              </p>
+              <p>
+                From building production Android applications at <strong className="text-stone-900 font-semibold">Webtech Developers</strong> to engineering agentic RAG and Knowledge Graph pipelines at <strong className="text-stone-900 font-semibold">Sunbeam Infotech</strong>, I bridge native mobile craftsmanship with scalable backend ecosystems.
+              </p>
+            </div>
+
+            {/* Trait Pills that fly in and dock */}
+            <div className="about-text-block pt-2">
+              <p className="text-xs font-bold uppercase tracking-widest text-[#D4A373] mb-3">Core Pillars</p>
+              <div className="flex flex-wrap gap-2.5">
+                {[
+                  "Clean MVVM Architecture",
+                  "Local-First & Offline Sync",
+                  "Jetpack Compose & Kotlin",
+                  "Agentic RAG & Graph NLP",
+                  "High-FPS Micro-Interactions",
+                  "Team & Student Leadership",
+                ].map((trait) => (
+                  <span
+                    key={trait}
+                    className="about-pill-item inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white text-stone-800 text-xs sm:text-sm font-semibold shadow-sm border border-[#D4A373]/30 hover:border-[#D4A373] hover:shadow-md transition-all duration-200"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#D4A373]" />
+                    {trait}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </Section>
 

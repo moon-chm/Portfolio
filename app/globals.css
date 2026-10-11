@@ -158,6 +158,17 @@ body {
   will-change: transform;
 }
 
+/* About Me 3D Assemble Stage */
+.about-assemble-stage {
+  perspective: 1200px;
+  perspective-origin: center center;
+}
+
+.about-fly-item {
+  will-change: transform, opacity;
+  transform-style: preserve-3d;
+}
+
 /* Color animation keyframe for the "Hello, World!" text */
 @keyframes colorChange {
   0% { color: #D4A373; }
